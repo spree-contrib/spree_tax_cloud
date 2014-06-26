@@ -1,45 +1,30 @@
 Spree::Order.class_eval do
 
-	has_one :tax_cloud_transaction
+  def finalize!
+    # lock all adjustments (coupon promotions, etc.)
+    all_adjustments.each{|a| a.close}
+    
+    # tell TaxCloud to consider this order completed
+    # TODO there is surely a cleaner way to set this hook
+    transaction = Spree::TaxCloud.transaction_from_order(self)
+    transaction.authorized_with_capture
 
-	self.state_machine.after_transition :to => :payment, :do => :lookup_tax_cloud, :if => :tax_cloud_eligible?
+    # update payment and shipment(s) states, and save
+    updater.update_payment_state
+    shipments.each do |shipment|
+      shipment.update!(self)
+      shipment.finalize!
+    end
 
-	self.state_machine.after_transition :to => :complete, :do => :capture_tax_cloud, :if => :tax_cloud_eligible?
+    updater.update_shipment_state
+    save
+    updater.run_hooks
 
-	def tax_cloud_eligible?
-		ship_address.try(:state_id?)
-	end
+    touch :completed_at
 
-	def lookup_tax_cloud
-		unless tax_cloud_transaction.nil?
-			tax_cloud_transaction.lookup
-		else
-			create_tax_cloud_transaction
-			tax_cloud_transaction.lookup
-			tax_cloud_adjustment
-		end
-	end
+    deliver_order_confirmation_email unless confirmation_delivered?
 
-	def tax_cloud_adjustment
-		binding.pry
-		line_items.each do |line_item|
-			line_item.adjustments.create({
-				source:  self.tax_cloud_transaction,
-				label:  'Tax from TaxCloud',
-				mandatory:  true,
-				eligible:  true,
-				amount:  line_item.tax_cloud_cart_item.amount,
-				order_id: self.id
-			}) 
-		end
-	end
-
-	def promotions_total
-		adjustments.eligible.promotion.map(&:amount).sum.abs
-	end
-
-	def capture_tax_cloud
-		return unless tax_cloud_transaction
-		tax_cloud_transaction.capture
-	end
-	end
+    consider_risk
+  end
+  
+end
