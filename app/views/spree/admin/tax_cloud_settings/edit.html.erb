@@ -37,35 +37,6 @@
           <%= text_field_tag('settings[taxcloud_usps_user_id]', Spree::Config.taxcloud_usps_user_id, :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
         </p>
       </fieldset>
-
-      <fieldset>
-        <legend><%= t('business_address') %></legend>
-        <p>
-          <label><%= Spree.t('address1') %></label><br />
-	  <%= text_field_tag('address[taxcloud_address1]', origin["Address1"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-        <p>
-          <label><%= Spree.t('address2') %></label><br />
-	  <%= text_field_tag('address[taxcloud_address2]', origin["Address2"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-        <p>
-          <label><%= Spree.t('city') %></label><br />
-	  <%= text_field_tag('address[taxcloud_city]', origin["City"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-        <p>
-          <label><%= Spree.t('state') %></label><br />
-	  <%= text_field_tag('address[taxcloud_state]', origin["State"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-        <p>
-          <label><%= Spree.t('zipcode') %></label><br />
-    <%= text_field_tag('address[taxcloud_zip5]', origin["Zip5"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-        <p>
-          <label><%= t('zip_plus_4') %></label><br />
-    <%= text_field_tag('address[taxcloud_zip4]', origin["Zip4"], :size => 46, :maxlength => 256, :class => 'tax_cloud') %>
-        </p>
-
-      </fieldset>
     </div>
   </div>
 
