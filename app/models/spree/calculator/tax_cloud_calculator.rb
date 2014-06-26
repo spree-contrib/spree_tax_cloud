@@ -9,13 +9,13 @@ module Spree
     # Orders created before Spree 2.1 had tax adjustments applied to the order, as a whole.
     # Orders created with Spree 2.2 and after, have them applied to the line items individually.
     def compute_order(order)
-      raise 'TaxCloud::CartItem is designed to calculate taxes at the shipment and line-item levels.'
+      raise 'Spree::TaxCloud is designed to calculate taxes at the shipment and line-item levels.'
     end
 
     # When it comes to computing shipments or line items: same same.
     def compute_shipment_or_line_item(item)
       if rate.included_in_price
-        raise 'TaxCloud::CartItem cannot calculate inclusive sales taxes.'
+        raise 'TaxCloud cannot calculate inclusive sales taxes.'
       else
         round_to_two_places(tax_for_item(item))
         # TODO take discounted_amount into account. This is a problem because TaxCloud API does not take discounts nor does it return percentage rates.
@@ -27,12 +27,12 @@ module Spree
 
     def compute_shipping_rate(shipping_rate)
       if rate.included_in_price
-        raise 'TaxCloud::CartItem cannot calculate inclusive sales taxes.'
+        raise 'TaxCloud cannot calculate inclusive sales taxes.'
       else
         if shipping_rate.shipment
           compute_shipment_or_line_item(shipment)
         else
-          raise 'TaxCloud::CartItem cannot accurately calculate tax for shipping rates without a shipment.'
+          raise 'TaxCloud cannot accurately calculate tax for shipping rates without a shipment.'
         end
       end
     end
