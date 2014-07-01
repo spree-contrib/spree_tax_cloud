@@ -1,30 +1,13 @@
 Spree::Order.class_eval do
 
-  def finalize!
-    # lock all adjustments (coupon promotions, etc.)
-    all_adjustments.each{|a| a.close}
-    
-    # tell TaxCloud to consider this order completed
-    # TODO there is surely a cleaner way to set this hook
+  self.state_machine.after_transition to: :complete, do: :capture_tax_cloud  
+
+  def capture_tax_cloud
     transaction = Spree::TaxCloud.transaction_from_order(self)
-    transaction.authorized_with_capture
-
-    # update payment and shipment(s) states, and save
-    updater.update_payment_state
-    shipments.each do |shipment|
-      shipment.update!(self)
-      shipment.finalize!
+    response =  transaction.authorized_with_capture 
+    if response != "OK"
+      Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
     end
-
-    updater.update_shipment_state
-    save
-    updater.run_hooks
-
-    touch :completed_at
-
-    deliver_order_confirmation_email unless confirmation_delivered?
-
-    consider_risk
   end
   
 end
