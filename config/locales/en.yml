@@ -1,12 +1,12 @@
 ---
 en:
   spree:
+    address_verification_failed: Address Verification Failed
     tax_cloud_settings: TaxCloud Settings
     tax_cloud_taxability_codes: Taxability Codes
     tax_cloud_api_login_and_key: API Login and Key
     taxcloud_api_login_id: TaxCloud API Login ID
     taxcloud_api_key: TaxCloud API Key
-    taxcloud_default_product_tic: TaxCloud Default Product TIC
     taxcloud_shipping_tic: TaxCloud Shipping TIC
     tax_cloud_tic: TaxCloud TIC
     usps_user: USPS User ID
