@@ -7,7 +7,7 @@ describe 'Checkout', js: true do
   let!(:shipping_method) { create(:shipping_method) }
   let!(:stock_location) { create(:stock_location, country_id: country.id, state_id: state.id) }
   let!(:mug) { create(:product, :name => "RoR Mug") }
-  let!(:payment_method) { create(:payment_method) }
+  let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
 
   before do
@@ -35,28 +35,27 @@ describe 'Checkout', js: true do
     fill_in "order_email", :with => "test@example.com"
     click_button "Continue"
 
-    address = "order_bill_address_attributes"
-    fill_in "#{address}_firstname", :with => "John"
-    fill_in "#{address}_lastname", :with => "Doe"
-    fill_in "#{address}_address1", :with => "143 Swan Street"
-    fill_in "#{address}_city", :with => "Montgomery"
-    select "United States of America", :from => "#{address}_country_id"
-    select "Alabama", :from => "#{address}_state_id"
-    fill_in "#{address}_zipcode", :with => "12345"
-    fill_in "#{address}_phone", :with => "(555) 5555-555"
+    fill_in_address
+    fill_in "order_bill_address_attributes_zipcode", with: '12345'
+
     click_button "Save and Continue"
     click_button "Save and Continue"
-    page.should have_content("The Ship To zip code (12345) is not valid for this state (AL)")
+
+    click_button "Save and Continue"
+    page.should have_content("Address Verification Failed")
   end
 
-  it "should calculate and display tax on payment step" do
-    fill_in "order_email", :with => "test@example.com"
+  it "should calculate and display tax on payment step and allow full checkout" do
+    fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     fill_in_address
     click_button "Save and Continue"
     click_button "Save and Continue"
     # TODO update seeds to make an order with actual tax
-    page.should have_content("Tax: $0.00")
+    # page.should have_content("Tax: $0.00")
+
+    click_on "Save and Continue"
+    expect(current_path).to match(spree.order_path(Spree::Order.last))
   end
 
   it 'should not break when removing all items from cart after a tax calculation has been created' do
@@ -75,14 +74,14 @@ describe 'Checkout', js: true do
 
   def fill_in_address
     address = "order_bill_address_attributes"
-    fill_in "#{address}_firstname", :with => "John"
-    fill_in "#{address}_lastname", :with => "Doe"
-    fill_in "#{address}_address1", :with => "143 Swan Street"
-    fill_in "#{address}_city", :with => "Montgomery"
-    select "United States of America", :from => "#{address}_country_id"
-    select "Alabama", :from => "#{address}_state_id"
-    fill_in "#{address}_zipcode", :with => "36110"
-    fill_in "#{address}_phone", :with => "(555) 5555-555"
+    fill_in "#{address}_firstname", with: "John"
+    fill_in "#{address}_lastname", with: "Doe"
+    fill_in "#{address}_address1", with: "143 Swan Street"
+    fill_in "#{address}_city", with: "Montgomery"
+    select "United States of America", from: "#{address}_country_id"
+    select "Alabama", from: "#{address}_state_id"
+    fill_in "#{address}_zipcode", with: "36110"
+    fill_in "#{address}_phone", with: "(555) 5555-555"
   end
 
 end
