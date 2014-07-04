@@ -36,7 +36,7 @@ describe 'Checkout', js: true do
     fill_in "order_email", :with => "test@example.com"
     click_button "Continue"
 
-    fill_in_address
+    fill_in_address(default_address)
     fill_in "order_bill_address_attributes_zipcode", with: '12345'
 
     click_button "Save and Continue"
@@ -49,7 +49,7 @@ describe 'Checkout', js: true do
   it "should calculate and display tax on payment step and allow full checkout" do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    fill_in_address
+    fill_in_address(default_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
     # TODO update seeds to make an order with actual tax
@@ -62,7 +62,7 @@ describe 'Checkout', js: true do
   it 'should not break when removing all items from cart after a tax calculation has been created' do
     fill_in "order_email", :with => "test@example.com"
     click_button "Continue"
-    fill_in_address
+    fill_in_address(default_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
     # TODO update seeds to make an order with actual tax
@@ -73,16 +73,29 @@ describe 'Checkout', js: true do
     page.should_not have_content('Internal Server Error')
   end
 
-  def fill_in_address
-    address = "order_bill_address_attributes"
-    fill_in "#{address}_firstname", with: "John"
-    fill_in "#{address}_lastname", with: "Doe"
-    fill_in "#{address}_address1", with: "143 Swan Street"
-    fill_in "#{address}_city", with: "Montgomery"
-    select "United States of America", from: "#{address}_country_id"
-    select "Alabama", from: "#{address}_state_id"
-    fill_in "#{address}_zipcode", with: "36110"
-    fill_in "#{address}_phone", with: "(555) 5555-555"
+  def default_address
+    address = Spree::Address.new()
+    address.firstname = "John"
+    address.lastname = "Doe"
+    address.address1 = "143 Swan Street"
+    address.city = "Montgomery"
+    address.country = Spree::Country.where(name: "United States of America").first
+    address.state = Spree::State.where(name: "Alabama").first
+    address.zipcode = "36110"
+    address.phone = "(555) 5555-555"
+    address
   end
-
+  
+  def fill_in_address(address)
+    fieldname = "order_bill_address_attributes"
+    fill_in "#{fieldname}_firstname", with: address.first_name
+    fill_in "#{fieldname}_lastname", with: address.last_name
+    fill_in "#{fieldname}_address1", with: address.address1
+    fill_in "#{fieldname}_city", with: address.city
+    select address.country.name, from: "#{fieldname}_country_id"
+    select address.state.name, from: "#{fieldname}_state_id"
+    fill_in "#{fieldname}_zipcode", with: address.zipcode
+    fill_in "#{fieldname}_phone", with: address.phone
+  end
+  
 end
