@@ -29,11 +29,13 @@ module Spree
       if rate.included_in_price
         raise 'TaxCloud cannot calculate inclusive sales taxes.'
       else
-        if shipping_rate.shipment
-          compute_shipment_or_line_item(shipment)
-        else
-          raise 'TaxCloud cannot accurately calculate tax for shipping rates without a shipment.'
-        end
+        # Sales tax will be applied to the Shipment itself, rather than to the Shipping Rates.
+        # Note that this method is called from ShippingRate.display_price, so if we returned
+        # the shipping sales tax here, it would display as part of the display_price of the 
+        # ShippingRate, which is not consistent with how US sales tax typically works -- i.e.,
+        # it is an additional amount applied to a sale at the end, rather than being part of
+        # the displayed cost of a good or service.
+        return 0
       end
     end
 
@@ -66,6 +68,9 @@ module Spree
         # Retrieve line_items from lookup
         order.line_items.each do |line_item|
           Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], lookup_cart_items[index += 1].tax_amount, time_to_idle: 5.minutes)
+        end
+        order.shipments.each do |shipment|
+          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], lookup_cart_items[index += 1].tax_amount, time_to_idle: 5.minutes)
         end
 
         # Lastly, return the particular rate that we were initially looking for
