@@ -18,7 +18,8 @@ module Spree
       index = -1 # array is zero-indexed
       # Prepare line_items for lookup
       order.line_items.each { |line_item| transaction.cart_items << cart_item_from_item(line_item, index += 1) }
-      transaction.cart_items << shipping_item_from_order(order, index += 1)
+      # Prepare shipments for lookup
+      order.shipments.each { |shipment| transaction.cart_items << cart_item_from_item(shipment, index += 1) }
       
       return transaction
     end
@@ -34,7 +35,7 @@ module Spree
     end
     
     def self.cart_item_from_item(item, index)
-      if item.class.to_s == "Spree::LineItem"
+      if item.class.name.demodulize == "LineItem"
         line_item = item
         ::TaxCloud::CartItem.new(
         index:      index,
@@ -44,7 +45,7 @@ module Spree
         quantity:   line_item.quantity
         )
 
-      elsif item.class.to_s == "Spree::Shipment"
+      elsif item.class.name.demodulize == "Shipment"
         shipment = item
         ::TaxCloud::CartItem.new(
         index:      index,
@@ -59,15 +60,5 @@ module Spree
       end
     end
       
-    def self.shipping_item_from_order(order, index)
-      ::TaxCloud::CartItem.new(
-      index:      index,
-      item_id:    "SHIPPING",
-      tic:        Spree::Config.taxcloud_shipping_tic,
-      price:      order.ship_total,
-      quantity:   1
-      )
-    end    
-
   end
 end
