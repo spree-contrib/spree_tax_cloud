@@ -43,13 +43,17 @@ module Spree
 
     def tax_for_item(item)
       order = item.order
+      if order.ship_address.nil?
+        # We can't calculate tax when we don't have a destination address
+        return 0
+      end
 
       # Our cache will expire if the order, any of its line items, or any of its shipments change.
       # When the cache expires, we will need to make another API call to TaxCloud.
       Rails.cache.fetch(["TaxCloudRatesForItem", item.tax_cloud_cache_key], time_to_idle: 5.minutes) do
 
         # In the case of a cache miss, we recompute the amounts for _all_ the LineItems and Shipments for this Order.
-
+        
         # TODO An ideal implementation will break the order down by Shipments / Packages
         # and use the actual StockLocation address for each separately, and create Adjustments
         # for the Shipments to reflect tax on shipping.
