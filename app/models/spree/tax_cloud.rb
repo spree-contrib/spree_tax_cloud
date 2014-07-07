@@ -20,7 +20,7 @@ module Spree
       order.line_items.each { |line_item| transaction.cart_items << cart_item_from_item(line_item, index += 1) }
       # Prepare shipments for lookup
       order.shipments.each { |shipment| transaction.cart_items << cart_item_from_item(shipment, index += 1) }
-      
+
       return transaction
     end
 
@@ -33,14 +33,14 @@ module Spree
       zip5:       address.zipcode[0...5]
       )
     end
-    
+
     def self.cart_item_from_item(item, index)
       if item.class.name.demodulize == "LineItem"
         line_item = item
         ::TaxCloud::CartItem.new(
         index:      index,
         item_id:    line_item.try(:variant).try(:sku) || "LineItem " + line_item.id.to_s,
-        tic:        line_item.product.tax_cloud_tic,
+        tic:        (line_item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
         price:      line_item.price,
         quantity:   line_item.quantity
         )
@@ -59,6 +59,6 @@ module Spree
         raise 'TaxCloud::CartItem cannot be made from this item.'
       end
     end
-      
+
   end
 end
