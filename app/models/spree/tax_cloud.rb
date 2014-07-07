@@ -60,23 +60,6 @@ module Spree
         raise 'TaxCloud::CartItem cannot be made from this item.'
       end
     end
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
-
-    def self.shipping_item_from_order(order, index)
-      ::TaxCloud::CartItem.new(
-      index:      index,
-      item_id:    "SHIPPING",
-      tic:        Spree::Config.taxcloud_shipping_tic,
-      price:      order.ship_total,
-      quantity:   1
-      )
-    end
-=======
->>>>>>> 7bd834c... Fallback to default product tic.
-
->>>>>>> Fallback to default product tic.
+    
   end
 end
