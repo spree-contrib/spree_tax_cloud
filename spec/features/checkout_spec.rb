@@ -3,9 +3,9 @@ require 'spec_helper'
 describe 'Checkout', js: true do
 
   let!(:country) { create(:country, name: "United States of America", states_required: true) }
-  let!(:state) { create(:state, name: "Alabama", country: country) }
+  let!(:state) { create(:state, name: "Washington", abbr: "WA", country: country) }
   let!(:shipping_method) { create(:shipping_method) }
-  let!(:stock_location) { create(:stock_location, country_id: country.id, state_id: state.id) }
+  let!(:stock_location) { create(:stock_location, country_id: stock_location_address.country.id, state_id: stock_location_address.state.id, address1: stock_location_address.address1, city: stock_location_address.city, zipcode: stock_location_address.zipcode) }
   let!(:mug) { create(:product, name: "RoR Mug") }
   let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
@@ -18,8 +18,8 @@ describe 'Checkout', js: true do
     @product.save!
 
     stock_location.stock_items.update_all(count_on_hand: 1)
-    # Ensure it's configured for tax:
-    Spree::StockLocation.first.update_attributes(address1: '2301 Coliseum Pkwy', city: 'Montgomery', zipcode: '36110')
+    
+    Spree::State.find_or_create_by!(name: "Alabama", abbr: "AL", country: Spree::Country.where(name: "United States of America").first)
 
     create(:zone)
     tax_rate = Spree::TaxRate.create(amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first)
@@ -36,7 +36,7 @@ describe 'Checkout', js: true do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
 
-    fill_in_address(default_address)
+    fill_in_address(alabama_address)
     fill_in "order_bill_address_attributes_zipcode", with: '12345'
 
     click_button "Save and Continue"
@@ -50,7 +50,7 @@ describe 'Checkout', js: true do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
 
-    fill_in_address(default_address)
+    fill_in_address(alabama_address)
     Spree::Product.where(name: "RoR Mug").first.update_attributes(sku: "")
 
     click_button "Save and Continue"
@@ -60,11 +60,10 @@ describe 'Checkout', js: true do
   it "should calculate and display tax on payment step and allow full checkout" do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    fill_in_address(default_address)
+    fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
-    # TODO update seeds to make an order with actual tax
-    # page.should have_content("Tax: $0.00")
+    # page.should have_content("Tax: $0.00") # Alabama orders are configured under this API key to have no tax
 
     click_on "Save and Continue"
     expect(current_path).to match(spree.order_path(Spree::Order.last))
@@ -73,30 +72,16 @@ describe 'Checkout', js: true do
   it 'should not break when removing all items from cart after a tax calculation has been created' do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    fill_in_address(default_address)
+    fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
-    # TODO update seeds to make an order with actual tax
-    page.should have_content("Order Total: $19.99")
+    page.should have_content("Order Total: $19.99") # Alabama orders are configured under this API key to have no tax
     visit spree.cart_path
     find('a.delete').click
     page.should have_content('Shopping Cart')
     page.should_not have_content('Internal Server Error')
   end
 
-  def default_address
-    address = Spree::Address.new()
-    address.firstname = "John"
-    address.lastname = "Doe"
-    address.address1 = "143 Swan Street"
-    address.city = "Montgomery"
-    address.country = Spree::Country.where(name: "United States of America").first
-    address.state = Spree::State.where(name: "Alabama").first
-    address.zipcode = "36110"
-    address.phone = "(555) 5555-555"
-    address
-  end
-  
   def fill_in_address(address)
     fieldname = "order_bill_address_attributes"
     fill_in "#{fieldname}_firstname", with: address.first_name
@@ -107,6 +92,30 @@ describe 'Checkout', js: true do
     select address.state.name, from: "#{fieldname}_state_id"
     fill_in "#{fieldname}_zipcode", with: address.zipcode
     fill_in "#{fieldname}_phone", with: address.phone
+  end
+  
+  def stock_location_address
+    stock_location_address = Spree::Address.new(
+    firstname: "Testing",
+    lastname: "Location",
+    address1: "3121 W Government Way",
+    city: "Seattle",
+    country: Spree::Country.where(name: "United States of America").first,
+    state: Spree::State.where(name: "Washington").first,
+    zipcode: "98199-1402",
+    phone: "(555) 5555-555")
+  end
+  
+  def alabama_address
+    alabama_address = Spree::Address.new(
+    firstname: "John",
+    lastname: "Doe",
+    address1: "143 Swan Street",
+    city: "Montgomery",
+    country: Spree::Country.where(name: "United States of America").first,
+    state: Spree::State.where(name: "Alabama").first,
+    zipcode: "36110",
+    phone: "(555) 5555-555")
   end
   
 end
