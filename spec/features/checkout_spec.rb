@@ -46,6 +46,17 @@ describe 'Checkout', js: true do
     page.should have_content("Address Verification Failed")
   end
 
+  it "should tolerate a missing sku without throwing a Tax Cloud exception" do
+    fill_in "order_email", with: "test@example.com"
+    click_button "Continue"
+
+    fill_in_address(default_address)
+    Spree::Product.where(name: "RoR Mug").first.update_attributes(sku: "")
+
+    click_button "Save and Continue"
+    page.should_not have_content("Address Verification Failed")
+  end
+
   it "should calculate and display tax on payment step and allow full checkout" do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
