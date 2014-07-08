@@ -32,11 +32,18 @@ RSpec.configure do |config|
   # Without transactional fixtures set to false none of the records created to setup a test will be available to the browser, which runs under a seperate server instance.
   config.use_transactional_fixtures = false
 
+  # Official verification and test harness login credentials provided 7/8/14 
+  # by David Campbell of The Federal Tax Authority.
+  # This account is configured to collect sales tax in the 24 SSUTA states:
+  # AR, GA, IN, IA, KS, KY, MI, MN, NE, NV, NJ, NC, ND, OH, OK, RI, SD, TN, UT, VT, WA, WV, WI, and WY
+  # The account does not collect sales tax in the remaining sales tax states:
+  # AL, AK, AZ, CA, CO, CT, DC, FL, HI, ID, IL, LA, ME, MD, MA, MS, MO, NM, NY, PA, SC, TX, and VA    
   config.before :suite do
-    Spree::Config[:taxcloud_api_login_id] = '395D0F00'
-    Spree::Config[:taxcloud_api_key]      = 'E191A9C3-75AD-49A5-917E-171E0C9CD396'
+    Spree::Config[:taxcloud_api_login_id] = '2D7D820'
+    Spree::Config[:taxcloud_api_key]      = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
+    Spree::Config[:taxcloud_usps_user_id] = '000FEDTA0000'
     Spree::Config[:taxcloud_default_product_tic]  = '00000'
-    Spree::Config[:taxcloud_shipping_tic] = '11010'
+    Spree::Config[:taxcloud_shipping_tic]         = '11010'
   end
 
   config.before :each do
