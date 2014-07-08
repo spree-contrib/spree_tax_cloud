@@ -46,6 +46,9 @@ module Spree
       if order.ship_address.nil?
         # We can't calculate tax when we don't have a destination address
         return 0
+      elsif !self.calculable.zone.include?(order.ship_address)
+        # If the order is outside our jurisdiction, then return 0
+        return 0
       end
 
       # Our cache will expire if the order, any of its line items, or any of its shipments change.
