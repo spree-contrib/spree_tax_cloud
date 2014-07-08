@@ -39,7 +39,7 @@ module Spree
         line_item = item
         ::TaxCloud::CartItem.new(
         index:      index,
-        item_id:    line_item.try(:variant).try(:sku) || "LineItem " + line_item.id.to_s,
+        item_id:    line_item.try(:variant).try(:sku).present? ? line_item.try(:variant).try(:sku) : ("LineItem " + line_item.id.to_s),
         tic:        (line_item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
         price:      line_item.price,
         quantity:   line_item.quantity
