@@ -2,17 +2,17 @@ require 'spec_helper'
 
 describe 'Checkout', js: true do
 
-  let!(:country) { create(:country, :name => "United States of America",:states_required => true) }
-  let!(:state) { create(:state, :name => "Alabama", :country => country) }
+  let!(:country) { create(:country, name: "United States of America", states_required: true) }
+  let!(:state) { create(:state, name: "Alabama", country: country) }
   let!(:shipping_method) { create(:shipping_method) }
   let!(:stock_location) { create(:stock_location, country_id: country.id, state_id: state.id) }
-  let!(:mug) { create(:product, :name => "RoR Mug") }
+  let!(:mug) { create(:product, name: "RoR Mug") }
   let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
 
   before do
     Spree::Product.delete_all
-    @product = create(:product, :name => "RoR Mug")
+    @product = create(:product, name: "RoR Mug")
     # Not sure if we should fix spree core to not require a shipping category on products...
     @product.shipping_category = shipping_method.shipping_categories.first
     @product.save!
@@ -33,7 +33,7 @@ describe 'Checkout', js: true do
   end
 
   it "should display tax lookup error if invalid address" do
-    fill_in "order_email", :with => "test@example.com"
+    fill_in "order_email", with: "test@example.com"
     click_button "Continue"
 
     fill_in_address(default_address)
@@ -60,7 +60,7 @@ describe 'Checkout', js: true do
   end
 
   it 'should not break when removing all items from cart after a tax calculation has been created' do
-    fill_in "order_email", :with => "test@example.com"
+    fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     fill_in_address(default_address)
     click_button "Save and Continue"
