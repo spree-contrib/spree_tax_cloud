@@ -13,6 +13,7 @@ describe 'Checkout', js: true do
   before do
     Spree::Product.delete_all
     @product = create(:product, name: "RoR Mug", price: 10)
+    @product = create(:product, name: "Shirt", price: 10, tax_cloud_tic: 20010)
     # Not sure if we should fix spree core to not require a shipping category on products...
     @product.shipping_category = shipping_method.shipping_categories.first
     @product.save!
@@ -26,14 +27,10 @@ describe 'Checkout', js: true do
     tax_rate = Spree::TaxRate.create(amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false)
   end
 
-  before do
-    visit spree.products_path
-    click_link "RoR Mug"
-    click_button "add-to-cart-button"
-    click_button "Checkout"
-  end
-
   it "should display tax lookup error if invalid address" do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
 
@@ -48,6 +45,9 @@ describe 'Checkout', js: true do
   end
 
   it "should tolerate a missing sku without throwing a Tax Cloud exception" do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
 
@@ -59,6 +59,9 @@ describe 'Checkout', js: true do
   end
 
   it "should calculate and display tax on payment step and allow full checkout" do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     fill_in_address(alabama_address)
@@ -71,6 +74,9 @@ describe 'Checkout', js: true do
   end
 
   it 'should not break when removing all items from cart after a tax calculation has been created' do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     fill_in_address(alabama_address)
@@ -84,6 +90,9 @@ describe 'Checkout', js: true do
   end
 
   it 'completes TaxCloud test case 1a' do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     page.should have_content("Order Total: $10")
@@ -101,6 +110,9 @@ describe 'Checkout', js: true do
   end
 
   it 'completes TaxCloud test case 1b' do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     page.should have_content("Order Total: $10")
@@ -114,13 +126,7 @@ describe 'Checkout', js: true do
   end
   
   it 'completes TaxCloud test case 2a' do
-    # Use a different TIC for the RoR Mug
-    visit spree.cart_path
-    find('a.delete').click
-    Spree::Product.where(name: "RoR Mug").first.update_attributes(tax_cloud_tic: 20010)
-    visit spree.products_path
-    click_link "RoR Mug"
-    click_button "add-to-cart-button"
+    add_to_cart("Shirt")
     click_button "Checkout"
 
     fill_in "order_email", with: "test@example.com"
@@ -142,6 +148,11 @@ describe 'Checkout', js: true do
     page.should have_content("ORDER TOTAL: $10")
   end
   
+  def add_to_cart(item_name)
+    visit spree.products_path
+    click_link item_name
+    click_button "add-to-cart-button"
+  end
  
   def fill_in_address(address)
     fieldname = "order_bill_address_attributes"
