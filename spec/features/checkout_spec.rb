@@ -24,6 +24,7 @@ describe 'Checkout', js: true do
     stock_location.stock_items.update_all(count_on_hand: 1)
     
     Spree::State.find_or_create_by!(name: "Alabama", abbr: "AL", country: Spree::Country.where(name: "United States of America").first)
+    Spree::State.find_or_create_by!(name: "Georgia", abbr: "GA", country: Spree::Country.where(name: "United States of America").first)
     Spree::State.find_or_create_by!(name: "Minnesota", abbr: "MN", country: Spree::Country.where(name: "United States of America").first)
     Spree::State.find_or_create_by!(name: "Oklahoma", abbr: "OK", country: Spree::Country.where(name: "United States of America").first)
 
@@ -202,7 +203,44 @@ describe 'Checkout', js: true do
     page.should have_content("Sales Tax $0.84")
     page.should have_content("ORDER TOTAL: $20.84")
   end
+
+  # it 'completes TaxCloud test case 4' do
+  # TODO
+  # end
+  #
+  # it 'completes TaxCloud test case 5' do
+  # TODO
+  # end
  
+  it 'completes TaxCloud test case 6' do
+    add_to_cart("Shirt")
+    click_button "Checkout"
+
+    fill_in "order_email", with: "test@example.com"
+    click_button "Continue"
+    page.should have_content("Item Total: $10")
+    fill_in_address(test_case_6_address)
+    click_button "Save and Continue"
+
+    page.should have_content("Sales Tax $0.80")
+    page.should have_content("Order Total: $20.80")
+    page.should_not have_content("Address Verification Failed")
+    click_button "Save and Continue"
+
+    page.should have_content("Sales Tax $1.60")
+    page.should have_content("Order Total: $21.60")
+
+    click_on "Save and Continue"
+
+    expect(current_path).to match(spree.order_path(Spree::Order.last))
+    page.should have_content("Sales Tax $1.60")
+    page.should have_content("ORDER TOTAL: $21.60")
+  end
+ 
+  # it 'completes TaxCloud test case 7' do
+  # TODO
+  # end
+  
   def add_to_cart(item_name)
     visit spree.products_path
     click_link item_name
@@ -282,6 +320,18 @@ describe 'Checkout', js: true do
     country: Spree::Country.where(name: "United States of America").first,
     state: Spree::State.where(abbr: "OK").first,
     zipcode: "73105",
+    phone: "(555) 5555-555")
+  end
+       
+  def test_case_6_address
+    stock_location_address = Spree::Address.new(
+    firstname: "John",
+    lastname: "Doe",
+    address1: "384 Northyards Blvd NW",
+    city: "Atlanta",
+    country: Spree::Country.where(name: "United States of America").first,
+    state: Spree::State.where(abbr: "GA").first,
+    zipcode: "30313",
     phone: "(555) 5555-555")
   end
        
