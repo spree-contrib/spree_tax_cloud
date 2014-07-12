@@ -11,6 +11,9 @@ describe 'Checkout', js: true do
   let!(:zone) { create(:zone) }
 
   before do
+    shipping_calc = Spree::ShippingMethod.first.calculator
+    shipping_calc.preferred_amount = 10
+    shipping_calc.save!
     Spree::Product.delete_all
     @product = create(:product, name: "RoR Mug", price: 10)
     @product = create(:product, name: "Shirt", price: 10, tax_cloud_tic: 20010)
@@ -82,7 +85,8 @@ describe 'Checkout', js: true do
     fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
-    page.should have_content("Order Total: $10.00") # Alabama orders are configured under this API key to have no tax
+    page.should_not have_content("Sales Tax")
+    page.should have_content("Order Total: $20.00") # Alabama orders are configured under this API key to have no tax
     visit spree.cart_path
     find('a.delete').click
     page.should have_content('Shopping Cart')
@@ -105,7 +109,6 @@ describe 'Checkout', js: true do
     # can still be passed to Lookup. The only error that should prevent an order from processing
     # is when the USPSID used is not valid, or a customer provided zip code does not exist
     # within the customer provided state (discussed later in Test Case 7, Handling Errors).
-    click_button "Save and Continue"
     page.should have_content("Sales Tax $0.94")
   end
 
@@ -115,13 +118,12 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Order Total: $10")
+    page.should have_content("Item Total: $10")
     fill_in_address(test_case_1b_address)
     click_button "Save and Continue"
     # From TaxCloud:
     # The destination address used as-is will not give the most accurate
     # rate. The verified address will give the correct result.
-    click_button "Save and Continue"
     page.should have_content("Sales Tax $0.95")
   end
   
@@ -131,7 +133,7 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Order Total: $10")
+    page.should have_content("Item Total: $10")
     fill_in_address(test_case_2a_address)
     click_button "Save and Continue"
 
@@ -139,13 +141,13 @@ describe 'Checkout', js: true do
     click_button "Save and Continue"
 
     page.should_not have_content("Sales Tax")
-    page.should have_content("Order Total: $10")
+    page.should have_content("Order Total: $20")
 
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
     page.should_not have_content("Sales Tax")
-    page.should have_content("ORDER TOTAL: $10")
+    page.should have_content("ORDER TOTAL: $20")
   end
   
   def add_to_cart(item_name)
