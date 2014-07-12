@@ -4,7 +4,7 @@ describe 'Checkout', js: true do
 
   let!(:country) { create(:country, name: "United States of America", states_required: true) }
   let!(:state) { create(:state, name: "Washington", abbr: "WA", country: country) }
-  let!(:shipping_method) { create(:shipping_method) }
+  let!(:shipping_method) { create(:shipping_method, tax_category_id: 1) }
   let!(:stock_location) { create(:stock_location, country_id: stock_location_address.country.id, state_id: stock_location_address.state.id, address1: stock_location_address.address1, city: stock_location_address.city, zipcode: stock_location_address.zipcode) }
   let!(:mug) { create(:product, name: "RoR Mug") }
   let!(:payment_method) { create(:check_payment_method) }
@@ -25,6 +25,7 @@ describe 'Checkout', js: true do
     
     Spree::State.find_or_create_by!(name: "Alabama", abbr: "AL", country: Spree::Country.where(name: "United States of America").first)
     Spree::State.find_or_create_by!(name: "Minnesota", abbr: "MN", country: Spree::Country.where(name: "United States of America").first)
+    Spree::State.find_or_create_by!(name: "Oklahoma", abbr: "OK", country: Spree::Country.where(name: "United States of America").first)
 
     create(:zone)
     tax_rate = Spree::TaxRate.create(amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false)
@@ -150,12 +151,64 @@ describe 'Checkout', js: true do
     page.should have_content("ORDER TOTAL: $20")
   end
   
+  it 'completes TaxCloud test case 2b' do
+    add_to_cart("RoR Mug")
+    add_to_cart("Shirt")
+    click_button "Checkout"
+
+    fill_in "order_email", with: "test@example.com"
+    click_button "Continue"
+    page.should have_content("Item Total: $20")
+    fill_in_address(test_case_2b_address)
+    click_button "Save and Continue"
+
+    page.should have_content("Sales Tax $0.76")
+    page.should have_content("Order Total: $30.76")
+    page.should_not have_content("Address Verification Failed")
+    click_button "Save and Continue"
+
+    page.should have_content("Sales Tax $1.52")
+    page.should have_content("Order Total: $31.52")
+    # The argument could be made that two $0.7625 tax charges sum to
+    # $1.525, which rounds up to $1.53. However, that's not how Spree does it.
+    # Unknown whether this is important from a tax compliance standpoint.
+
+    click_on "Save and Continue"
+
+    expect(current_path).to match(spree.order_path(Spree::Order.last))
+    page.should have_content("Sales Tax $1.52")
+    page.should have_content("ORDER TOTAL: $31.52")
+  end
+
+  it 'completes TaxCloud test case 3' do
+    add_to_cart("Shirt")
+    click_button "Checkout"
+
+    fill_in "order_email", with: "test@example.com"
+    click_button "Continue"
+    page.should have_content("Item Total: $10")
+    fill_in_address(test_case_3_address)
+    click_button "Save and Continue"
+
+    page.should_not have_content("Address Verification Failed")
+    click_button "Save and Continue"
+
+    page.should have_content("Sales Tax $0.84")
+    page.should have_content("Order Total: $20.84")
+
+    click_on "Save and Continue"
+
+    expect(current_path).to match(spree.order_path(Spree::Order.last))
+    page.should have_content("Sales Tax $0.84")
+    page.should have_content("ORDER TOTAL: $20.84")
+  end
+ 
   def add_to_cart(item_name)
     visit spree.products_path
     click_link item_name
     click_button "add-to-cart-button"
   end
- 
+
   def fill_in_address(address)
     fieldname = "order_bill_address_attributes"
     fill_in "#{fieldname}_firstname", with: address.first_name
@@ -213,6 +266,22 @@ describe 'Checkout', js: true do
     country: Spree::Country.where(name: "United States of America").first,
     state: Spree::State.where(abbr: "MN").first,
     zipcode: "55155",
+    phone: "(555) 5555-555")
+  end
+       
+  def test_case_2b_address
+    return test_case_2a_address
+  end
+
+  def test_case_3_address
+    stock_location_address = Spree::Address.new(
+    firstname: "John",
+    lastname: "Doe",
+    address1: "2300 N Lincoln Blvd",
+    city: "Oklahoma City",
+    country: Spree::Country.where(name: "United States of America").first,
+    state: Spree::State.where(abbr: "OK").first,
+    zipcode: "73105",
     phone: "(555) 5555-555")
   end
        
