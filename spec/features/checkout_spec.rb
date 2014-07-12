@@ -2,34 +2,26 @@ require 'spec_helper'
 
 describe 'Checkout', js: true do
 
-  let!(:country) { create(:country, name: "United States of America", states_required: true) }
-  let!(:state) { create(:state, name: "Washington", abbr: "WA", country: country) }
-  let!(:shipping_method) { create(:shipping_method, tax_category_id: 1) }
+  let!(:usa) { create(:country, name: "United States of America", states_required: true) }
+  let!(:alabama) { create(:state, name: "Alabama", abbr: "AL", country: usa) }
+  let!(:georgia) { create(:state, name: "Georgia", abbr: "GA", country: usa) }
+  let!(:minnesota) { create(:state, name: "Minnesota", abbr: "MN", country: usa) }
+  let!(:oklahoma) { create(:state, name: "Oklahoma", abbr: "OK", country: usa) }
+  let!(:washington) { create(:state, name: "Washington", abbr: "WA", country: usa) }
+
+  let!(:shipping_calculator) { create(:calculator) }
+  # default calculator in the Spree factory is flat rate of $10, which is exactly what we want
+  let!(:shipping_method) { create(:shipping_method, tax_category_id: 1, calculator: shipping_calculator) }
   let!(:stock_location) { create(:stock_location, country_id: stock_location_address.country.id, state_id: stock_location_address.state.id, address1: stock_location_address.address1, city: stock_location_address.city, zipcode: stock_location_address.zipcode) }
-  let!(:mug) { create(:product, name: "RoR Mug") }
+  let!(:mug) { create(:product, name: "RoR Mug", price: 10) }
+  let!(:shirt) { create(:product, name: "Shirt", price: 10, tax_cloud_tic: 20010) }
   let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
+  
+  let!(:tax_rate) { create(:tax_rate, amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false) }
 
   before do
-    shipping_calc = Spree::ShippingMethod.first.calculator
-    shipping_calc.preferred_amount = 10
-    shipping_calc.save!
-    Spree::Product.delete_all
-    @product = create(:product, name: "RoR Mug", price: 10)
-    @product = create(:product, name: "Shirt", price: 10, tax_cloud_tic: 20010)
-    # Not sure if we should fix spree core to not require a shipping category on products...
-    @product.shipping_category = shipping_method.shipping_categories.first
-    @product.save!
-
     stock_location.stock_items.update_all(count_on_hand: 1)
-    
-    Spree::State.find_or_create_by!(name: "Alabama", abbr: "AL", country: Spree::Country.where(name: "United States of America").first)
-    Spree::State.find_or_create_by!(name: "Georgia", abbr: "GA", country: Spree::Country.where(name: "United States of America").first)
-    Spree::State.find_or_create_by!(name: "Minnesota", abbr: "MN", country: Spree::Country.where(name: "United States of America").first)
-    Spree::State.find_or_create_by!(name: "Oklahoma", abbr: "OK", country: Spree::Country.where(name: "United States of America").first)
-
-    create(:zone)
-    tax_rate = Spree::TaxRate.create(amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false)
   end
 
   it "should display tax lookup error if invalid address" do
