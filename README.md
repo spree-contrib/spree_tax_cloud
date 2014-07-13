@@ -55,13 +55,13 @@ TODO
 
 Some work on the Spree:TaxCloud extension is ongoing. Namely:
 
-- [ ] Fill out a more complete set of feature specs using the scenarios provided by Tax Cloud.
+- [x] Fill out a more complete set of feature specs using the test case scenarios provided by Tax Cloud.
 
 - [ ] Scope Tax Cloud transactions to Shipments rather than Orders, to account for the unusual cases where sales tax depends on the origin address as well as, or instead of, the destination address.
 
-- [ ] Create feature specs and make the appropriat eAPI calls to properly process sales tax on item returns.
+- [ ] Item Returns: Create feature specs and make the appropriate API calls to properly process sales tax on item returns.
 
-- [ ] Spree::TaxCloud is not (yet) fully compatible with some types of Spree promotions. For instance in cases such as "$10 off all orders over $100," it is not explicit how such a discount will affect the costs of individual items. In these cases, Spree::TaxCloud will fall back to charging sales tax on the full (undiscounted) item price.
+- [ ] Promotions: Spree::TaxCloud is not (yet) fully compatible with some types of Spree promotions. For instance in cases such as "$10 off all orders over $100," it is not explicit how such a discount will affect the costs of individual items. In these cases, Spree::TaxCloud will fall back to charging sales tax on the full (undiscounted) item price.
 
 Discussion and pull requests addressing this functionality are welcomed.
 
