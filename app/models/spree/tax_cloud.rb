@@ -2,7 +2,7 @@ module Spree
   class TaxCloud
 
     def self.transaction_from_order(order)
-      stock_location = Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
+      stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
       unless stock_location
         raise 'Please ensure you have at least one Stock Location with a valid address for your tax origin.'
       end
@@ -25,6 +25,8 @@ module Spree
     end
 
     def self.address_from_spree_address(address)
+      # Note that this method can take either a Spree::StockLocation (which has address
+      # attributes directly on it) or a Spree::Address object
       ::TaxCloud::Address.new(
       address1:   address.address1,
       address2:   address.address2,
