@@ -164,7 +164,9 @@ describe 'Checkout', js: true do
     page.should have_content("Order Total: $31.52")
     # The argument could be made that two $0.7625 tax charges sum to
     # $1.525, which rounds up to $1.53. However, that's not how Spree does it.
-    # Unknown whether this is important from a tax compliance standpoint.
+    # Confirmed in 7/14/14 conversation with TaxCloud CEO David Campbell
+    # that $1.52 is the correct figure: tax is NOT summed and then rounded,
+    # but rather is rounded per-line-item, then summed.
 
     click_on "Save and Continue"
 
