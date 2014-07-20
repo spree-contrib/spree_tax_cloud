@@ -50,6 +50,8 @@ Notes
 
 Spree::TaxCloud is designed to function in a single TaxCategory. It is expected that all Products and all ShippingMethods will be in the same TaxCategory as the one configured for the TaxRate using the Tax Cloud calculator above (in this example, `Taxable`).
 
+Spree::TaxCloud is designed to perform all US-related tax calculation itself, and as such does not use Spree configuration like TaxCategories to specify whether goods are Taxable, Tax-Exempt, Clothing, Food, etc. Spree::TaxCloud does not use the Spree configuration `tax_address` (which specifies whether the shipping or billing address should be used to compute tax), instead _always_ using the shipping address if possible, and only falling back to the billing address if the shipping address is `nil`. (Asking Spree::TaxCloud to compute orders whose shipping _and_ billing addresses are `nil` will result in an exception.)
+
 TODO
 ----
 
