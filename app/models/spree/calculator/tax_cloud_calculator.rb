@@ -43,10 +43,11 @@ module Spree
 
     def tax_for_item(item)
       order = item.order
-      if order.ship_address.nil?
+      item_address = order.ship_address || order.billing_address
+      if item_address.nil?
         # We can't calculate tax when we don't have a destination address
         return 0
-      elsif !self.calculable.zone.include?(order.ship_address)
+      elsif !self.calculable.zone.include?(item_address)
         # If the order is outside our jurisdiction, then return 0
         return 0
       end
