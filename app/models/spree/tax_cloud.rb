@@ -63,6 +63,6 @@ module Spree
         raise 'TaxCloud::CartItem cannot be made from this item.'
       end
     end
-    
+
   end
 end

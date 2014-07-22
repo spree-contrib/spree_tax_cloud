@@ -9,16 +9,30 @@ describe 'Checkout', js: true do
   let!(:oklahoma) { create(:state, name: "Oklahoma", abbr: "OK", country: usa) }
   let!(:washington) { create(:state, name: "Washington", abbr: "WA", country: usa) }
 
+  let!(:zone) do
+    zone = create(:zone, name: "US")
+    zone.members.create(zoneable: usa)
+    return zone
+  end
+
+  let!(:uk) { create(:country, name: "United Kingdom", :states_required => false, iso_name: "UNITED KINGDOM", iso: "UK", iso3: "GBR", numcode: 826) }
+  let!(:uk_address) { create(:address, country: uk, state: nil, zipcode: "SW1A 1AA") }
+  let!(:non_us_zone) do
+    zone = create(:zone, name: "Rest of the world")
+    zone.members.create(zoneable: uk)
+    return zone
+  end
+
   let!(:shipping_calculator) { create(:calculator) }
   # default calculator in the Spree factory is flat rate of $10, which is exactly what we want
-  let!(:shipping_method) { create(:shipping_method, tax_category_id: 1, calculator: shipping_calculator) }
+  let!(:shipping_method) { create(:shipping_method, tax_category_id: 1, calculator: shipping_calculator, zones: [zone, non_us_zone]) }
   let!(:stock_location) { create(:stock_location, country_id: stock_location_address.country.id, state_id: stock_location_address.state.id, address1: stock_location_address.address1, city: stock_location_address.city, zipcode: stock_location_address.zipcode) }
   let!(:mug) { create(:product, name: "RoR Mug", price: 10) }
   let!(:shirt) { create(:product, name: "Shirt", price: 10, tax_cloud_tic: 20010) }
   let!(:payment_method) { create(:check_payment_method) }
-  let!(:zone) { create(:zone) }
-  
-  let!(:tax_rate) { create(:tax_rate, amount: 0, name: "Sales Tax", zone: Spree::Zone.first, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false) }
+
+  let!(:tax_rate) { create(:tax_rate, amount: 0, name: "Sales Tax", zone: zone, calculator: Spree::Calculator::TaxCloudCalculator.create, tax_category: Spree::TaxCategory.first, show_rate_in_label: false) }
+  let!(:flat_tax_rate) { create(:tax_rate, amount: 0.1, name: "Flat Sales Tax", zone: non_us_zone, tax_category: Spree::TaxCategory.first, show_rate_in_label: false) }
 
   before do
     stock_location.stock_items.update_all(count_on_hand: 1)
@@ -87,6 +101,26 @@ describe 'Checkout', js: true do
     page.should_not have_content('Internal Server Error')
   end
 
+  it "should only calculate using tax cloud for orders that use the tax cloud calculator" do
+    add_to_cart("RoR Mug")
+    click_button "Checkout"
+
+    fill_in "order_email", with: "test@example.com"
+    click_button "Continue"
+    fill_in_address(uk_address)
+
+    click_button "Save and Continue"
+    # There should not be a check on the address because
+    # the rate is not handled by TaxCloud.
+    expect(page).not_to have_content("Address Verification Failed")
+
+    click_button "Save and Continue"
+    click_button "Save and Continue"
+
+    expect(current_path).to match(spree.order_path(Spree::Order.last))
+    expect(page).not_to have_content("Address Verification Failed")
+  end
+
   it 'completes TaxCloud test case 1a' do
     add_to_cart("RoR Mug")
     click_button "Checkout"
@@ -120,7 +154,7 @@ describe 'Checkout', js: true do
     # rate. The verified address will give the correct result.
     page.should have_content("Sales Tax $0.95")
   end
-  
+
   it 'completes TaxCloud test case 2a' do
     add_to_cart("Shirt")
     click_button "Checkout"
@@ -143,7 +177,7 @@ describe 'Checkout', js: true do
     page.should_not have_content("Sales Tax")
     page.should have_content("ORDER TOTAL: $20")
   end
-  
+
   it 'completes TaxCloud test case 2b' do
     add_to_cart("RoR Mug")
     add_to_cart("Shirt")
@@ -205,7 +239,7 @@ describe 'Checkout', js: true do
   # it 'completes TaxCloud test case 5' do
   # TODO
   # end
- 
+
   it 'completes TaxCloud test case 6' do
     add_to_cart("Shirt")
     click_button "Checkout"
@@ -230,11 +264,11 @@ describe 'Checkout', js: true do
     page.should have_content("Sales Tax $1.60")
     page.should have_content("ORDER TOTAL: $21.60")
   end
- 
+
   # it 'completes TaxCloud test case 7' do
   # TODO
   # end
-  
+
   def add_to_cart(item_name)
     visit spree.products_path
     click_link item_name
@@ -248,11 +282,23 @@ describe 'Checkout', js: true do
     fill_in "#{fieldname}_address1", with: address.address1
     fill_in "#{fieldname}_city", with: address.city
     select address.country.name, from: "#{fieldname}_country_id"
-    select address.state.name, from: "#{fieldname}_state_id"
+
+    # Wait for the ajax to complete for the states selector.
+    Timeout.timeout(Capybara.default_wait_time) do
+      loop do
+        break if page.evaluate_script("jQuery.active").to_i == 0
+      end
+    end
+
+    if address.state != nil
+      select address.state.name, from: "#{fieldname}_state_id"
+    else
+      expect(page).not_to have_css("##{fieldname}_state_id.required")
+    end
     fill_in "#{fieldname}_zipcode", with: address.zipcode
     fill_in "#{fieldname}_phone", with: address.phone
   end
-  
+
   def stock_location_address
     stock_location_address = Spree::Address.new(
     firstname: "Testing",
@@ -264,7 +310,7 @@ describe 'Checkout', js: true do
     zipcode: "98199-1402",
     phone: "(555) 5555-555")
   end
-  
+
   def test_case_1a_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
@@ -276,7 +322,7 @@ describe 'Checkout', js: true do
     zipcode: "98001",
     phone: "(555) 5555-555")
   end
-  
+
   def test_case_1b_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
@@ -288,7 +334,7 @@ describe 'Checkout', js: true do
     zipcode: "98059",
     phone: "(555) 5555-555")
   end
-  
+
   def test_case_2a_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
@@ -300,7 +346,7 @@ describe 'Checkout', js: true do
     zipcode: "55155",
     phone: "(555) 5555-555")
   end
-       
+
   def test_case_2b_address
     return test_case_2a_address
   end
@@ -316,7 +362,7 @@ describe 'Checkout', js: true do
     zipcode: "73105",
     phone: "(555) 5555-555")
   end
-       
+
   def test_case_6_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
@@ -328,7 +374,7 @@ describe 'Checkout', js: true do
     zipcode: "30313",
     phone: "(555) 5555-555")
   end
-       
+
   def alabama_address
     alabama_address = Spree::Address.new(
     firstname: "John",
@@ -340,5 +386,5 @@ describe 'Checkout', js: true do
     zipcode: "36110",
     phone: "(555) 5555-555")
   end
-  
+
 end
