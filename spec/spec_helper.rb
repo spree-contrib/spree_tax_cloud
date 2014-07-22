@@ -21,6 +21,9 @@ require 'spree/testing_support/preferences'
 require 'spree/testing_support/flash'
 require 'spree/testing_support/url_helpers'
 
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Spree::TestingSupport::ControllerRequests
@@ -32,12 +35,12 @@ RSpec.configure do |config|
   # Without transactional fixtures set to false none of the records created to setup a test will be available to the browser, which runs under a seperate server instance.
   config.use_transactional_fixtures = false
 
-  # Official verification and test harness login credentials provided 7/8/14 
+  # Official verification and test harness login credentials provided 7/8/14
   # by David Campbell of The Federal Tax Authority.
   # This account is configured to collect sales tax in the 24 SSUTA states:
   # AR, GA, IN, IA, KS, KY, MI, MN, NE, NV, NJ, NC, ND, OH, OK, RI, SD, TN, UT, VT, WA, WV, WI, and WY
   # The account does not collect sales tax in the remaining sales tax states:
-  # AL, AK, AZ, CA, CO, CT, DC, FL, HI, ID, IL, LA, ME, MD, MA, MS, MO, NM, NY, PA, SC, TX, and VA    
+  # AL, AK, AZ, CA, CO, CT, DC, FL, HI, ID, IL, LA, ME, MD, MA, MS, MO, NM, NY, PA, SC, TX, and VA
   config.before :suite do
     Spree::Config[:taxcloud_api_login_id] = '2D7D820'
     Spree::Config[:taxcloud_api_key]      = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
