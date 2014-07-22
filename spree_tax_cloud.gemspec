@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'spree_api'
   s.add_dependency 'spree_backend'
-  s.add_dependency 'spree_core', '~> 2.3.1'
+  s.add_dependency 'spree_core', '~> 2.4.0.beta'
   s.add_dependency 'spree_frontend'
 
   s.add_runtime_dependency 'savon', '~> 2.5.1'
