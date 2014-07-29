@@ -156,7 +156,7 @@ describe 'Checkout', js: true do
     click_button "Save and Continue"
 
     page.should have_content("Sales Tax $0.76")
-    page.should have_content("Order Total: $20.76")
+    page.should have_content("Order Total: $30.76")
     page.should_not have_content("Address Verification Failed")
     click_button "Save and Continue"
 
@@ -217,7 +217,7 @@ describe 'Checkout', js: true do
     click_button "Save and Continue"
 
     page.should have_content("Sales Tax $0.80")
-    page.should have_content("Order Total: $10.80")
+    page.should have_content("Order Total: $20.80")
     page.should_not have_content("Address Verification Failed")
     click_button "Save and Continue"
 
