@@ -59,7 +59,9 @@ Some work on the Spree:TaxCloud extension is ongoing. Namely:
 
 - [x] Fill out a more complete set of feature specs using the test case scenarios provided by Tax Cloud.
 
-- [ ] Scope Tax Cloud transactions to Shipments rather than Orders, to account for the unusual cases where sales tax depends on the origin address as well as, or instead of, the destination address.
+- [ ] Address Validation: Support an address validation step via the Tax Cloud gem (which will fix the one non-passing spec at the moment).
+
+- [ ] Split Shipments: Scope Tax Cloud transactions to Shipments rather than Orders, to account for the unusual cases where sales tax depends on the origin address as well as, or instead of, the destination address.
 
 - [ ] Item Returns: Create feature specs and make the appropriate API calls to properly process sales tax on item returns.
 
