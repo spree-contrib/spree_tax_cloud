@@ -36,6 +36,17 @@ module Spree
       zip5:       address.zipcode[0...5]
       )
     end
+    
+    def self.spree_address_from_address(address)
+      binding.pry
+      Spree::Address.new(
+      address1:   address.address1,
+      address2:   address.address2,
+      city:       address.city,
+      state:      Spree::State.find_by_abbr(address.try(:state).try(:abbr)) ? : address.try(:state).try(:abbr), # replace with state_text if possible
+      zip5:       "#{address.zipcode[0...5]}#{address.zipcode[6..9].present? ? '-' + address.zipcode[6..9] : ''}"
+      )
+    end
 
     def self.cart_item_from_item(item, index)
       if item.class.name.demodulize == "LineItem"

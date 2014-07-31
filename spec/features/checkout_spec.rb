@@ -149,6 +149,7 @@ describe 'Checkout', js: true do
     page.should have_content("Item Total: $10")
     fill_in_address(test_case_1b_address)
     click_button "Save and Continue"
+    binding.pry
     # From TaxCloud:
     # The destination address used as-is will not give the most accurate
     # rate. The verified address will give the correct result.
