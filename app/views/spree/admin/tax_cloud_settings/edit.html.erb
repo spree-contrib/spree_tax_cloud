@@ -1,10 +1,10 @@
-<%= render :partial => 'spree/admin/shared/configuration_menu' %>
+<%= render partial: 'spree/admin/shared/configuration_menu' %>
 
 <% content_for :page_title do %>
   <%= Spree.t(:tax_cloud_settings) %>
 <% end %>
 
-<%= form_tag admin_tax_cloud_settings_path, :method => :put do %>
+<%= form_tag admin_tax_cloud_settings_path, method: :put do %>
   <div id="preferences" data-hook>
 
       <div class="row">
@@ -15,7 +15,7 @@
                 type = Spree::Config.preference_type(key) %>
                 <div class="field">
                   <%= label_tag(key, Spree.t(key)) + tag(:br) if type != :boolean %>
-                  <%= preference_field_tag(key, Spree::Config[key], :type => type) %>
+                  <%= preference_field_tag(key, Spree::Config[key], type: type) %>
                   <%= label_tag(key, Spree.t(key)) + tag(:br) if type == :boolean %>
                 </div>
             <% end %>
@@ -28,7 +28,7 @@
                 type = Spree::Config.preference_type(key) %>
                 <div class="field">
                   <%= label_tag(key, Spree.t(key)) + tag(:br) if type != :boolean %>
-                  <%= preference_field_tag(key, Spree::Config[key], :type => type) %>
+                  <%= preference_field_tag(key, Spree::Config[key], type: type) %>
                   <%= label_tag(key, Spree.t(key)) + tag(:br) if type == :boolean %>
                 </div>
             <% end %>
@@ -39,7 +39,7 @@
       <div class="form-buttons filter-actions actions" data-hook="buttons">
         <%= button Spree.t('actions.update'), 'refresh' %>
         <span class="or"><%= Spree.t(:or) %></span>
-        <%= link_to_with_icon 'remove', Spree.t('actions.cancel'), edit_admin_tax_cloud_settings_url, :class => 'button' %>
+        <%= link_to_with_icon 'remove', Spree.t('actions.cancel'), edit_admin_tax_cloud_settings_url, class: 'button' %>
       </div>
 
     </fieldset>

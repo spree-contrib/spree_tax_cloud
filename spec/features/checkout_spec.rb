@@ -15,7 +15,7 @@ describe 'Checkout', js: true do
     return zone
   end
 
-  let!(:uk) { create(:country, name: "United Kingdom", :states_required => false, iso_name: "UNITED KINGDOM", iso: "UK", iso3: "GBR", numcode: 826) }
+  let!(:uk) { create(:country, name: "United Kingdom", states_required: false, iso_name: "UNITED KINGDOM", iso: "UK", iso3: "GBR", numcode: 826) }
   let!(:uk_address) { create(:address, country: uk, state: nil, zipcode: "SW1A 1AA") }
   let!(:non_us_zone) do
     zone = create(:zone, name: "Rest of the world")

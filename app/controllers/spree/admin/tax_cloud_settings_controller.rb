@@ -12,7 +12,7 @@ module Spree
           next unless Spree::Config.has_preference? name
           Spree::Config[name] = value
         end
-        flash[:success] = Spree.t(:successfully_updated, :resource => Spree.t(:tax_cloud_settings))
+        flash[:success] = Spree.t(:successfully_updated, resource: Spree.t(:tax_cloud_settings))
 
         redirect_to edit_admin_tax_cloud_settings_path
       end
@@ -20,9 +20,9 @@ module Spree
       def dismiss_alert
         if request.xhr? and params[:alert_id]
           dismissed = Spree::Config[:dismissed_spree_alerts] || ''
-          Spree::Config.set :dismissed_spree_alerts => dismissed.split(',').push(params[:alert_id]).join(',')
+          Spree::Config.set dismissed_spree_alerts: dismissed.split(',').push(params[:alert_id]).join(',')
           filter_dismissed_alerts
-          render :nothing => true
+          render nothing: true
         end
       end
       
