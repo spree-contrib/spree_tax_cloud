@@ -19,7 +19,7 @@ Spree::Order.class_eval do
     # It's not possible check against the order's tax adjustments because
     # an adjustment is not created for 0% rates. However, US orders must be
     # submitted to Tax Cloud even when the rate is 0%.
-    is_tax_cloud = Spree::TaxRate.match(tax_zone).any? { |rate| rate.calculator_type == "Spree::Calculator::TaxCloudCalculator" }
+    is_tax_cloud = Spree::TaxRate.match(self).any? { |rate| rate.calculator_type == "Spree::Calculator::TaxCloudCalculator" }
     return is_tax_cloud
   end
 end
