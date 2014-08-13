@@ -11,6 +11,10 @@ module SpreeTaxCloud
       g.test_framework :rspec
     end
 
+    initializer "spree_tax_cloud.permitted_attributes" do |app|
+      Spree::PermittedAttributes.product_attributes << :tax_cloud_tic
+    end
+
     def self.activate
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
