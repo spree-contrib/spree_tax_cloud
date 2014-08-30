@@ -16,7 +16,7 @@ module SpreeTaxCloud
     end
 
     def self.activate
-      Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
+      Dir.glob(File.join(File.dirname(__FILE__), '../../app/*/spree/*_decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
 
@@ -25,7 +25,7 @@ module SpreeTaxCloud
           'lib/assets/javascripts/spree/frontend/spree_tax_cloud.js',
           'lib/assets/stylesheets/spree/frontend/spree_tax_cloud.css'
         ]
-        Dir.glob(File.join(File.dirname(__FILE__), "../../controllers/*/frontend/*_decorator*.rb")) do |c|
+        Dir.glob(File.join(File.dirname(__FILE__), "../../app/**/frontend/*_decorator*.rb")) do |c|
           Rails.configuration.cache_classes ? require(c) : load(c)
         end
       end
