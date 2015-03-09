@@ -37,7 +37,6 @@ module SpreeTaxCloud
 
     if self.frontend_available?
       paths["app/controllers"] << "lib/controllers/frontend"
-      paths["app/views"] << "lib/views/frontend"
     end
 
     config.to_prepare &method(:activate).to_proc
