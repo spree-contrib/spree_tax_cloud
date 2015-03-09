@@ -385,5 +385,4 @@ describe 'Checkout', js: true do
     zipcode: "36110",
     phone: "(555) 5555-555")
   end
-
 end
