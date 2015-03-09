@@ -45,7 +45,7 @@ describe 'Checkout', js: true do
     click_button "Continue"
 
     fill_in_address(alabama_address)
-    fill_in "order_bill_address_attributes_zipcode", with: '12345'
+    fill_in "order_bill_address_attributes_zipcode", with: '35014'
 
     click_button "Save and Continue"
     click_button "Save and Continue"
