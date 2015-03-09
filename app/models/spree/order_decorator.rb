@@ -2,7 +2,7 @@ Spree::Order.class_eval do
   self.state_machine.after_transition to: :complete, do: :capture_tax_cloud
 
   def capture_tax_cloud
-    return if is_taxed_using_tax_cloud? == false
+    return unless is_taxed_using_tax_cloud?
     response =  Spree::TaxCloud.transaction_from_order(self).authorized_with_capture
     if response != "OK"
       Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
