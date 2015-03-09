@@ -2,6 +2,7 @@
 en:
   spree:
     address_verification_failed: Address Verification Failed
+    ensure_one_valid_stock_location: Please ensure you have at least one Stock Location with a valid address for your tax origin.
     tax_cloud_settings: TaxCloud Settings
     tax_cloud_taxability_codes: Taxability Codes
     tax_cloud_api_login_and_key: API Login and Key

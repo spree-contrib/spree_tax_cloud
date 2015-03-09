@@ -3,9 +3,7 @@ module Spree
 
     def self.transaction_from_order(order)
       stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
-      unless stock_location
-        raise 'Please ensure you have at least one Stock Location with a valid address for your tax origin.'
-      end
+      Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       transaction = ::TaxCloud::Transaction.new(
       customer_id: order.user_id || order.email,
