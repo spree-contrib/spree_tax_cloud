@@ -1,6 +1,5 @@
 module Spree
   class Calculator::TaxCloudCalculator < Calculator::DefaultTax
-    
     def self.description
       Spree.t(:tax_cloud)
     end
@@ -44,34 +43,24 @@ module Spree
     def tax_for_item(item)
       order = item.order
       item_address = order.ship_address || order.billing_address
-      if item_address.nil?
-        # We can't calculate tax when we don't have a destination address
-        return 0
-      elsif !self.calculable.zone.include?(item_address)
-        # If the order is outside our jurisdiction, then return 0
-        return 0
-      end
+      # Only calculate tax when we have an address and it's in our jurisdiction
+      return 0 unless item_address.present? && calculable.zone.include?(item_address)
 
-      # Our cache will expire if the order, any of its line items, or any of its shipments change.
+      # Cache will expire if the order, any of its line items, or any of its shipments change.
       # When the cache expires, we will need to make another API call to TaxCloud.
       Rails.cache.fetch(["TaxCloudRatesForItem", item.tax_cloud_cache_key], time_to_idle: 5.minutes) do
-
         # In the case of a cache miss, we recompute the amounts for _all_ the LineItems and Shipments for this Order.
-        
         # TODO An ideal implementation will break the order down by Shipments / Packages
         # and use the actual StockLocation address for each separately, and create Adjustments
         # for the Shipments to reflect tax on shipping.
         transaction = Spree::TaxCloud.transaction_from_order(order)
-        
-        lookup = transaction.lookup # This will return a TaxCloud::Responses::Lookup instance
-        lookup_cart_items = lookup.cart_items
+        lookup_cart_items = transaction.lookup.cart_items
 
         # Now we will loop back through the items and assign them amounts from the lookup.
         # This inefficient method is due to the fact that item_id isn't preserved in the lookup.
         # TODO There may be a way to refactor this,
         # possibly by overriding the TaxCloud::Responses::Lookup model
         # or the CartItems model.
-
         index = -1 # array is zero-indexed
         # Retrieve line_items from lookup
         order.line_items.each do |line_item|
@@ -85,6 +74,5 @@ module Spree
         Rails.cache.read(["TaxCloudRatesForItem", item.tax_cloud_cache_key])
       end
     end
-
   end
 end
