@@ -4,4 +4,3 @@ Deface::Override.new(
   insert_after: "[data-hook='admin_product_form_tax_category']",
   partial: "spree/admin/products/edit_tax_cloud_tic"
 )
-
