@@ -5,12 +5,11 @@ module Spree
       raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       transaction = ::TaxCloud::Transaction.new(
-      customer_id: order.user_id || order.email,
-      order_id: order.number,
-      cart_id: order.number,
-      origin: address_from_spree_address(stock_location),
-      destination: address_from_spree_address(order.ship_address || order.billing_address)
-      # if the shipping address is nil for some reason, we can fall back to the billing address
+        customer_id: order.user_id || order.email,
+        order_id: order.number,
+        cart_id: order.number,
+        origin: address_from_spree_address(stock_location),
+        destination: address_from_spree_address(order.ship_address || order.billing_address)
       )
 
       index = -1 # array is zero-indexed
@@ -21,15 +20,15 @@ module Spree
       transaction
     end
 
+    # Note that this method can take either a Spree::StockLocation (which has address
+    # attributes directly on it) or a Spree::Address object
     def self.address_from_spree_address(address)
-      # Note that this method can take either a Spree::StockLocation (which has address
-      # attributes directly on it) or a Spree::Address object
       ::TaxCloud::Address.new(
-      address1:   address.address1,
-      address2:   address.address2,
-      city:       address.city,
-      state:      address.try(:state).try(:abbr), # replace with state_text if possible
-      zip5:       address.zipcode.try(:[], 0...5)
+        address1: address.address1,
+        address2: address.address2,
+        city:     address.city,
+        state:    address.try(:state).try(:abbr),
+        zip5:     address.zipcode.try(:[], 0...5)
       )
     end
 
