@@ -52,7 +52,7 @@ module Spree
         quantity:   1
         )
       else
-        raise 'TaxCloud::CartItem cannot be made from this item.'
+        raise Spree.t(:cart_item_cannot_be_made)
       end
     end
   end
