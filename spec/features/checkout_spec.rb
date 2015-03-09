@@ -348,7 +348,7 @@ describe 'Checkout', js: true do
   end
 
   def test_case_2b_address
-    return test_case_2a_address
+    test_case_2a_address
   end
 
   def test_case_3_address
