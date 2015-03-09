@@ -163,7 +163,7 @@ describe 'Checkout', js: true do
     fill_in_address(test_case_2_address)
     click_button "Save and Continue"
 
-    page.should_not have_content("Address Verification Failed")
+    page.should_not have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
     page.should_not have_content(/Sales Tax/i)
