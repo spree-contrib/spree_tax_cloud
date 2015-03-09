@@ -1,4 +1,4 @@
-<%= render partial: 'spree/admin/shared/configuration_menu' %>
+<%= render 'spree/admin/shared/configuration_menu' %>
 
 <% content_for :page_title do %>
   <%= Spree.t(:tax_cloud_settings) %>
@@ -6,11 +6,10 @@
 
 <%= form_tag admin_tax_cloud_settings_path, method: :put do %>
   <div id="preferences" data-hook>
-
-      <div class="row">
-        <div class="alpha six columns">
-          <fieldset class="security no-border-bottom">
-            <legend align="center"><%= Spree.t(:tax_cloud_api_login_and_key)%></legend>
+    <div class="row">
+      <div class="alpha six columns">
+        <fieldset class="security no-border-bottom">
+          <legend align="center"><%= Spree.t(:tax_cloud_api_login_and_key)%></legend>
             <% @preferences_login.each do |key|
                 type = Spree::Config.preference_type(key) %>
                 <div class="field">
@@ -41,9 +40,6 @@
         <span class="or"><%= Spree.t(:or) %></span>
         <%= link_to_with_icon 'remove', Spree.t('actions.cancel'), edit_admin_tax_cloud_settings_url, class: 'button' %>
       </div>
-
     </fieldset>
-
   </div>
-
 <% end %>
