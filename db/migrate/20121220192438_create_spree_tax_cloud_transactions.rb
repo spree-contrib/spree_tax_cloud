@@ -4,7 +4,7 @@ class CreateSpreeTaxCloudTransactions < ActiveRecord::Migration
       t.references :order
       t.string :message
 
-      t.timestamps
+      t.timestamps null: false
     end
     add_index :spree_tax_cloud_transactions, :order_id
   end
