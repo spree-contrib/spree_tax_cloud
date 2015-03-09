@@ -45,9 +45,9 @@ module Spree
       when Spree::Shipment
         ::TaxCloud::CartItem.new(
           index:    index,
-          item_id:  "Shipment #{shipment.number}",
+          item_id:  "Shipment #{item.number}",
           tic:      Spree::Config.taxcloud_shipping_tic,
-          price:    shipment.cost,
+          price:    item.cost,
           quantity: 1
         )
       else
