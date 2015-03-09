@@ -34,10 +34,10 @@ RSpec.configure do |config|
   # AL, AK, AZ, CA, CO, CT, DC, FL, HI, ID, IL, LA, ME, MD, MA, MS, MO, NM, NY, PA, SC, TX, and VA
   config.before :suite do
     Spree::Config[:taxcloud_api_login_id] = '2D7D820'
-    Spree::Config[:taxcloud_api_key]      = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
+    Spree::Config[:taxcloud_api_key] = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
     Spree::Config[:taxcloud_usps_user_id] = '000FEDTA0000'
-    Spree::Config[:taxcloud_default_product_tic]  = '00000'
-    Spree::Config[:taxcloud_shipping_tic]         = '11010'
+    Spree::Config[:taxcloud_default_product_tic] = '00000'
+    Spree::Config[:taxcloud_shipping_tic] = '11010'
   end
 
   config.before :each do
