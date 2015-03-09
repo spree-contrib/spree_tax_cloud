@@ -19,12 +19,6 @@ module SpreeTaxCloud
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/*/spree/*_decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
-    end
-
-    def self.frontend_available?
-      @@frontend_available ||= ::Rails::Engine.subclasses.map(&:instance).map do |engine|
-        engine.class.to_s
-      end.include?('Spree::Frontend::Engine')
 
       if SpreeTaxCloud::Engine.frontend_available?
         Rails.application.config.assets.precompile += [
@@ -35,6 +29,12 @@ module SpreeTaxCloud
           Rails.configuration.cache_classes ? require(c) : load(c)
         end
       end
+    end
+
+    def self.frontend_available?
+      @@frontend_available ||= ::Rails::Engine.subclasses.map(&:instance).map do |e|
+        e.class.to_s
+      end.include?('Spree::Frontend::Engine')
     end
 
     if self.frontend_available?
