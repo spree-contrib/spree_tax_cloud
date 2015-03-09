@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'Checkout', js: true do
-
   let!(:usa) { create(:country, name: "United States of America", states_required: true) }
   let!(:alabama) { create(:state, name: "Alabama", abbr: "AL", country: usa) }
   let!(:georgia) { create(:state, name: "Georgia", abbr: "GA", country: usa) }
@@ -12,7 +11,7 @@ describe 'Checkout', js: true do
   let!(:zone) do
     zone = create(:zone, name: "US")
     zone.members.create(zoneable: usa)
-    return zone
+    zone
   end
 
   let!(:uk) { create(:country, name: "United Kingdom", states_required: false, iso_name: "UNITED KINGDOM", iso: "UK", iso3: "GBR", numcode: 826) }
@@ -20,7 +19,7 @@ describe 'Checkout', js: true do
   let!(:non_us_zone) do
     zone = create(:zone, name: "Rest of the world")
     zone.members.create(zoneable: uk)
-    return zone
+    zone
   end
 
   let!(:shipping_calculator) { create(:calculator) }
