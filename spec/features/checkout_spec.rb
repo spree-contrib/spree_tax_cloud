@@ -160,7 +160,7 @@ describe 'Checkout', js: true do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     page.should have_content(/Item Total: \$10/i)
-    fill_in_address(test_case_2a_address)
+    fill_in_address(test_case_2_address)
     click_button "Save and Continue"
 
     page.should_not have_content("Address Verification Failed")
@@ -184,7 +184,7 @@ describe 'Checkout', js: true do
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
     page.should have_content(/Item Total: \$20/i)
-    fill_in_address(test_case_2b_address)
+    fill_in_address(test_case_2_address)
     click_button "Save and Continue"
 
     page.should have_content(/Sales Tax \$0.76/i)
@@ -333,7 +333,7 @@ describe 'Checkout', js: true do
     phone: "(555) 5555-555")
   end
 
-  def test_case_2a_address
+  def test_case_2_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
     lastname: "Doe",
@@ -343,10 +343,6 @@ describe 'Checkout', js: true do
     state: Spree::State.where(abbr: "MN").first,
     zipcode: "55155",
     phone: "(555) 5555-555")
-  end
-
-  def test_case_2b_address
-    test_case_2a_address
   end
 
   def test_case_3_address
