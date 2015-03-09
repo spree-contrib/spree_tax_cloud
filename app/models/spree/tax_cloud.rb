@@ -33,23 +33,22 @@ module Spree
     end
 
     def self.cart_item_from_item(item, index)
-      if item.class.name.demodulize == "LineItem"
-        line_item = item
+      case item
+      when Spree::LineItem
         ::TaxCloud::CartItem.new(
-        index:      index,
-        item_id:    line_item.try(:variant).try(:sku).present? ? line_item.try(:variant).try(:sku) : ("LineItem " + line_item.id.to_s),
-        tic:        (line_item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
-        price:      line_item.price,
-        quantity:   line_item.quantity
+          index:    index,
+          item_id:  item.try(:variant).try(:sku).present? ? item.try(:variant).try(:sku) : "LineItem #{item.id}",
+          tic:      (item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
+          price:    item.price,
+          quantity: item.quantity
         )
-      elsif item.class.name.demodulize == "Shipment"
-        shipment = item
+      when Spree::Shipment
         ::TaxCloud::CartItem.new(
-        index:      index,
-        item_id:    "Shipment " + shipment.number,
-        tic:        Spree::Config.taxcloud_shipping_tic,
-        price:      shipment.cost,
-        quantity:   1
+          index:    index,
+          item_id:  "Shipment #{shipment.number}",
+          tic:      Spree::Config.taxcloud_shipping_tic,
+          price:    shipment.cost,
+          quantity: 1
         )
       else
         raise Spree.t(:cart_item_cannot_be_made)
