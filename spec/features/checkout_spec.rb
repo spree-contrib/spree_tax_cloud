@@ -303,8 +303,8 @@ describe 'Checkout', js: true do
     lastname: "Location",
     address1: "3121 W Government Way",
     city: "Seattle",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "WA"),
     zipcode: "98199-1402",
     phone: "(555) 5555-555")
   end
@@ -315,8 +315,8 @@ describe 'Checkout', js: true do
     lastname: "Doe",
     address1: "1 3rd Street",
     city: "Seattle",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "WA"),
     zipcode: "98001",
     phone: "(555) 5555-555")
   end
@@ -327,8 +327,8 @@ describe 'Checkout', js: true do
     lastname: "Doe",
     address1: "354 Union Ave NE",
     city: "Renton",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "WA"),
     zipcode: "98059",
     phone: "(555) 5555-555")
   end
@@ -339,8 +339,8 @@ describe 'Checkout', js: true do
     lastname: "Doe",
     address1: "75 Rev Martin Luther King Jr Drive",
     city: "St. Paul",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "MN").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "MN"),
     zipcode: "55155",
     phone: "(555) 5555-555")
   end
