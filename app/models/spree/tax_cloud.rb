@@ -1,7 +1,7 @@
 module Spree
   class TaxCloud
     def self.transaction_from_order(order)
-      stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
+      stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.valid.first
       Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       transaction = ::TaxCloud::Transaction.new(
