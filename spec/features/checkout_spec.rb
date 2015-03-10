@@ -150,7 +150,7 @@ describe 'Checkout', js: true do
     # From TaxCloud:
     # The destination address used as-is will not give the most accurate
     # rate. The verified address will give the correct result.
-    page.should have_content(/Sales Tax \$0.95/i)
+    page.should have_content(/Sales Tax \$0.86/i)
   end
 
   it '2a: If all items in cart non-taxable, shipping adopts non-taxable' do
