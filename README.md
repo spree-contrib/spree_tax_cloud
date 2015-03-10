@@ -19,15 +19,31 @@ Spree Configuration
 
 Add the extension to your Gemfile:
 
-    gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud', branch: 'master'
-    
+```ruby
+gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud', branch: 'master'
+```
+
 And add it to your bundle:
 
-    bundle install
+```ruby
+bundle install
+```
 
 Run below to install migrations:
 
-    bundle exec rails g spree_tax_cloud:install
+```ruby
+bundle exec rails g spree_tax_cloud:install
+```
+
+Add tax cloud configurations:
+
+```ruby
+TaxCloud.configure do |config|
+  config.api_login_id = Rails.application.secrets.taxcloud_api_login_id
+  config.api_key = Rails.application.secrets.taxcloud_api_key
+  config.usps_username = Rails.application.secrets.taxcloud_usps_user_id
+end
+```
 
 In the Admin section of Spree, go to Configuration, then select TaxCloud Settings.
 
