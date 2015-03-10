@@ -298,15 +298,16 @@ describe 'Checkout', js: true do
   end
 
   def stock_location_address
-    stock_location_address = Spree::Address.new(
-    firstname: "Testing",
-    lastname: "Location",
-    address1: "3121 W Government Way",
-    city: "Seattle",
-    country: Spree::Country.find_by(name: "United States of America"),
-    state: Spree::State.find_by(abbr: "WA"),
-    zipcode: "98199-1402",
-    phone: "(555) 5555-555")
+    Spree::Address.new(
+      firstname: "Testing",
+      lastname: "Location",
+      address1: "3121 W Government Way",
+      city: "Seattle",
+      country: Spree::Country.find_by(name: "United States of America"),
+      state: Spree::State.find_by(abbr: "WA"),
+      zipcode: "98199-1402",
+      phone: "(555) 5555-555"
+    )
   end
 
   def test_case_1a_address
@@ -322,15 +323,16 @@ describe 'Checkout', js: true do
   end
 
   def test_case_1b_address
-    stock_location_address = Spree::Address.new(
-    firstname: "John",
-    lastname: "Doe",
-    address1: "354 Union Ave NE",
-    city: "Renton",
-    country: Spree::Country.find_by(name: "United States of America"),
-    state: Spree::State.find_by(abbr: "WA"),
-    zipcode: "98059",
-    phone: "(555) 5555-555")
+    Spree::Address.new(
+      firstname: "John",
+      lastname: "Doe",
+      address1: "354 Union Ave NE",
+      city: "Renton",
+      country: Spree::Country.find_by(name: "United States of America"),
+      state: Spree::State.find_by(abbr: "WA"),
+      zipcode: "98059",
+      phone: "(555) 5555-555"
+    )
   end
 
   def test_case_2_address
