@@ -47,11 +47,14 @@ end
 
 In the Admin section of Spree, go to Configuration, then select TaxCloud Settings.
 
-Enter your `api_login_id` and `api_key`, and optionally your USPS login. You can also configure the default Product TIC and Shipping TIC for TaxCloud to use, although it is recommended to leave the defaults as is: `00000` for product default and `11010` for shipping default.
+Enter your `api_login_id` and `api_key`, and optionally your USPS login.
+You can also configure the default Product TIC and Shipping TIC for TaxCloud to use, although it is recommended to leave the defaults as is: `00000` for product default and `11010` for shipping default.
 
-All Products will default to the default product TIC specified here unless they are given an explicit value. Specific product-level TICs may be specified per-product in the Products section of the Spree admin backend. If you are uncertain about the correct TIC for a product (whether it be clothing, books, etc.), taxability code information may be obtained from [Tax Cloud](https://taxcloud.net/tic/default.aspx).
+All Products will default to the default product TIC specified here unless they are given an explicit value.
+Specific product-level TICs may be specified per-product in the Products section of the Spree admin backend. If you are uncertain about the correct TIC for a product (whether it be clothing, books, etc.), taxability code information may be obtained from [Tax Cloud](https://taxcloud.net/tic/default.aspx).
 
-To complete your Spree::TaxCloud configuration, you will need to create a TaxRate to apply rates obtained from Tax Cloud to your Spree LineItems and Shipments. Under Configuration select Tax Rates, and click Create a New Tax Rate. Recommended defaults are as follows:
+To complete your Spree::TaxCloud configuration, you will need to create a TaxRate to apply rates obtained from Tax Cloud to your Spree LineItems and Shipments.
+Under Configuration select Tax Rates, and click Create a New Tax Rate. Recommended defaults are as follows:
 
 - Name: `Sales Tax` (This label will be visible to users during the checkout process)
 - Zone: `USA` (Note that TaxCloud is only designed for United States sales tax)
@@ -64,9 +67,12 @@ To complete your Spree::TaxCloud configuration, you will need to create a TaxRat
 Notes
 ------------------------
 
-Spree::TaxCloud is designed to function in a single TaxCategory. It is expected that all Products and all ShippingMethods will be in the same TaxCategory as the one configured for the TaxRate using the Tax Cloud calculator above (in this example, `Taxable`).
+Spree::TaxCloud is designed to function in a single TaxCategory.
+It is expected that all Products and all ShippingMethods will be in the same TaxCategory as the one configured for the TaxRate using the Tax Cloud calculator above (in this example, `Taxable`).
 
-Spree::TaxCloud is designed to perform all US-related tax calculation itself, and as such does not use Spree configuration like TaxCategories to specify whether goods are Taxable, Tax-Exempt, Clothing, Food, etc. Spree::TaxCloud does not use the Spree configuration `tax_address` (which specifies whether the shipping or billing address should be used to compute tax), instead _always_ using the shipping address if possible, and only falling back to the billing address if the shipping address is `nil`. (Asking Spree::TaxCloud to compute orders whose shipping _and_ billing addresses are `nil` will result in an exception.)
+Spree::TaxCloud is designed to perform all US-related tax calculation itself, and as such does not use Spree configuration like TaxCategories to specify whether goods are Taxable, Tax-Exempt, Clothing, Food, etc.
+Spree::TaxCloud does not use the Spree configuration `tax_address` (which specifies whether the shipping or billing address should be used to compute tax), instead _always_ using the shipping address if possible, and only falling back to the billing address if the shipping address is `nil`.
+(Asking Spree::TaxCloud to compute orders whose shipping _and_ billing addresses are `nil` will result in an exception.)
 
 TODO
 ----
