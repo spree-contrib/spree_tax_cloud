@@ -7,6 +7,7 @@ Spree::Order.class_eval do
     if response != "OK"
       Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
     end
+    log_tax_cloud(response)
   end
 
   # TaxRate.match is used here to check if the order is taxable by Tax Cloud.
@@ -17,5 +18,12 @@ Spree::Order.class_eval do
     Spree::TaxRate.match(self.tax_zone).any? do |rate|
       rate.calculator_type == "Spree::Calculator::TaxCloudCalculator"
     end
+  end
+
+  def log_tax_cloud(response)
+    # Implement into your own application.
+    # You could create your Log::TaxCloud model then use either HStore or
+    # JSONB to store the response.
+    # The response argument carries the response from an order transaction.
   end
 end
