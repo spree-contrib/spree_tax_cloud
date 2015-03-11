@@ -41,7 +41,7 @@ Add tax cloud configurations:
 TaxCloud.configure do |config|
   config.api_login_id = Rails.application.secrets.taxcloud_api_login_id
   config.api_key = Rails.application.secrets.taxcloud_api_key
-  config.usps_username = Rails.application.secrets.taxcloud_usps_user_id
+  config.usps_username = Rails.application.secrets.taxcloud_usps_username
 end
 ```
 
