@@ -32,9 +32,7 @@ module SpreeTaxCloud
     end
 
     def self.frontend_available?
-      @@frontend_available ||= ::Rails::Engine.subclasses.map(&:instance).map do |e|
-        e.class.to_s
-      end.include?('Spree::Frontend::Engine')
+      @@frontend_available ||= ::Rails::Engine.subclasses.map(&:instance).map { |e| e.class.to_s }.include?('Spree::Frontend::Engine')
     end
 
     if self.frontend_available?
