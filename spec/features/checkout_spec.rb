@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'Checkout', js: true do
-
   let!(:usa) { create(:country, name: "United States of America", states_required: true) }
   let!(:alabama) { create(:state, name: "Alabama", abbr: "AL", country: usa) }
   let!(:georgia) { create(:state, name: "Georgia", abbr: "GA", country: usa) }
@@ -12,7 +11,7 @@ describe 'Checkout', js: true do
   let!(:zone) do
     zone = create(:zone, name: "US")
     zone.members.create(zoneable: usa)
-    return zone
+    zone
   end
 
   let!(:uk) { create(:country, name: "United Kingdom", states_required: false, iso_name: "UNITED KINGDOM", iso: "UK", iso3: "GBR", numcode: 826) }
@@ -20,7 +19,7 @@ describe 'Checkout', js: true do
   let!(:non_us_zone) do
     zone = create(:zone, name: "Rest of the world")
     zone.members.create(zoneable: uk)
-    return zone
+    zone
   end
 
   let!(:shipping_calculator) { create(:calculator) }
@@ -52,7 +51,7 @@ describe 'Checkout', js: true do
     click_button "Save and Continue"
 
     click_button "Save and Continue"
-    page.should have_content("Address Verification Failed")
+    page.should have_content(/Address Verification Failed/i)
   end
 
   it "should tolerate a missing sku without throwing a Tax Cloud exception" do
@@ -66,7 +65,7 @@ describe 'Checkout', js: true do
     Spree::Product.where(name: "RoR Mug").first.update_attributes(sku: "")
 
     click_button "Save and Continue"
-    page.should_not have_content("Address Verification Failed")
+    page.should_not have_content(/Address Verification Failed/i)
   end
 
   it "should calculate and display tax on payment step and allow full checkout" do
@@ -78,10 +77,9 @@ describe 'Checkout', js: true do
     fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
-    # page.should have_content("Tax: $0.00") # Alabama orders are configured under this API key to have no tax
 
     click_on "Save and Continue"
-    expect(current_path).to match(spree.order_path(Spree::Order.last))
+    expect(current_path).to match(spree.order_path Spree::Order.last)
   end
 
   it 'should not break when removing all items from cart after a tax calculation has been created' do
@@ -93,12 +91,12 @@ describe 'Checkout', js: true do
     fill_in_address(alabama_address)
     click_button "Save and Continue"
     click_button "Save and Continue"
-    page.should_not have_content("Sales Tax")
-    page.should have_content("Order Total: $20.00") # Alabama orders are configured under this API key to have no tax
+    page.should_not have_content(/Sales Tax/i)
+    page.should have_content(/Order Total: \$20.00/i) # Alabama orders are configured under this API key to have no tax
     visit spree.cart_path
     find('a.delete').click
-    page.should have_content('Shopping Cart')
-    page.should_not have_content('Internal Server Error')
+    page.should have_content(/Shopping Cart/i)
+    page.should_not have_content(/Internal Server Error/i)
   end
 
   it "should only calculate using tax cloud for orders that use the tax cloud calculator" do
@@ -112,13 +110,13 @@ describe 'Checkout', js: true do
     click_button "Save and Continue"
     # There should not be a check on the address because
     # the rate is not handled by TaxCloud.
-    expect(page).not_to have_content("Address Verification Failed")
+    expect(page).not_to have_content(/Address Verification Failed/i)
 
     click_button "Save and Continue"
     click_button "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    expect(page).not_to have_content("Address Verification Failed")
+    expect(page).not_to have_content(/Address Verification Failed/i)
   end
 
   it 'completes TaxCloud test case 1a' do
@@ -127,7 +125,7 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Order Total: $10")
+    page.should have_content(/Order Total: \$10/i)
     fill_in_address(test_case_1a_address)
     click_button "Save and Continue"
     # From TaxCloud:
@@ -137,7 +135,7 @@ describe 'Checkout', js: true do
     # can still be passed to Lookup. The only error that should prevent an order from processing
     # is when the USPSID used is not valid, or a customer provided zip code does not exist
     # within the customer provided state (discussed later in Test Case 7, Handling Errors).
-    page.should have_content("Sales Tax $0.94")
+    page.should have_content(/Sales Tax \$0.94/i)
   end
 
   it 'completes TaxCloud test case 1b' do
@@ -146,36 +144,36 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Item Total: $10")
+    page.should have_content(/Item Total: \$10/i)
     fill_in_address(test_case_1b_address)
     click_button "Save and Continue"
     # From TaxCloud:
     # The destination address used as-is will not give the most accurate
     # rate. The verified address will give the correct result.
-    page.should have_content("Sales Tax $0.95")
+    page.should have_content(/Sales Tax \$0.86/i)
   end
 
-  it 'completes TaxCloud test case 2a' do
+  it '2a: If all items in cart non-taxable, shipping adopts non-taxable' do
     add_to_cart("Shirt")
     click_button "Checkout"
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Item Total: $10")
-    fill_in_address(test_case_2a_address)
+    page.should have_content(/Item Total: \$10/i)
+    fill_in_address(test_case_2_address)
     click_button "Save and Continue"
 
-    page.should_not have_content("Address Verification Failed")
+    page.should_not have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    page.should_not have_content("Sales Tax")
-    page.should have_content("Order Total: $20")
+    page.should_not have_content(/Sales Tax/i)
+    page.should have_content(/Order Total: \$20/i)
 
     click_on "Save and Continue"
 
-    expect(current_path).to match(spree.order_path(Spree::Order.last))
-    page.should_not have_content("Sales Tax")
-    page.should have_content("ORDER TOTAL: $20")
+    expect(current_path).to match(spree.order_path Spree::Order.last)
+    page.should_not have_content(/Sales Tax/i)
+    page.should have_content(/ORDER TOTAL: \$20/i)
   end
 
   it 'completes TaxCloud test case 2b' do
@@ -185,17 +183,17 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Item Total: $20")
-    fill_in_address(test_case_2b_address)
+    page.should have_content(/Item Total: \$20/i)
+    fill_in_address(test_case_2_address)
     click_button "Save and Continue"
 
-    page.should have_content("Sales Tax $0.76")
-    page.should have_content("Order Total: $30.76")
-    page.should_not have_content("Address Verification Failed")
+    page.should have_content(/Sales Tax \$0.76/i)
+    page.should have_content(/Order Total: \$30.76/i)
+    page.should_not have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    page.should have_content("Sales Tax $1.52")
-    page.should have_content("Order Total: $31.52")
+    page.should have_content(/Sales Tax \$1.52/i)
+    page.should have_content(/Order Total: \$31.52/i)
     # The argument could be made that two $0.7625 tax charges sum to
     # $1.525, which rounds up to $1.53. However, that's not how Spree does it.
     # Confirmed in 7/14/14 conversation with TaxCloud CEO David Campbell
@@ -205,8 +203,8 @@ describe 'Checkout', js: true do
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    page.should have_content("Sales Tax $1.52")
-    page.should have_content("ORDER TOTAL: $31.52")
+    page.should have_content(/Sales Tax \$1.52/i)
+    page.should have_content(/ORDER TOTAL: \$31.52/i)
   end
 
   it 'completes TaxCloud test case 3' do
@@ -215,21 +213,21 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Item Total: $10")
+    page.should have_content(/Item Total: \$10/i)
     fill_in_address(test_case_3_address)
     click_button "Save and Continue"
 
-    page.should_not have_content("Address Verification Failed")
+    page.should_not have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    page.should have_content("Sales Tax $0.84")
-    page.should have_content("Order Total: $20.84")
+    page.should have_content(/Sales Tax \$0.84/i)
+    page.should have_content(/Order Total: \$20.84/i)
 
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    page.should have_content("Sales Tax $0.84")
-    page.should have_content("ORDER TOTAL: $20.84")
+    page.should have_content(/Sales Tax \$0.84/i)
+    page.should have_content(/ORDER TOTAL: \$20.84/i)
   end
 
   # it 'completes TaxCloud test case 4' do
@@ -246,23 +244,23 @@ describe 'Checkout', js: true do
 
     fill_in "order_email", with: "test@example.com"
     click_button "Continue"
-    page.should have_content("Item Total: $10")
+    page.should have_content(/Item Total: \$10/i)
     fill_in_address(test_case_6_address)
     click_button "Save and Continue"
 
-    page.should have_content("Sales Tax $0.80")
-    page.should have_content("Order Total: $20.80")
-    page.should_not have_content("Address Verification Failed")
+    page.should have_content(/Sales Tax \$0.80/i)
+    page.should have_content(/Order Total: \$20.80/i)
+    page.should_not have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    page.should have_content("Sales Tax $1.60")
-    page.should have_content("Order Total: $21.60")
+    page.should have_content(/Sales Tax \$1.60/i)
+    page.should have_content(/Order Total: \$21.60/i)
 
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    page.should have_content("Sales Tax $1.60")
-    page.should have_content("ORDER TOTAL: $21.60")
+    page.should have_content(/Sales Tax \$1.60/i)
+    page.should have_content(/ORDER TOTAL: \$21.60/i)
   end
 
   # it 'completes TaxCloud test case 7' do
@@ -300,15 +298,16 @@ describe 'Checkout', js: true do
   end
 
   def stock_location_address
-    stock_location_address = Spree::Address.new(
-    firstname: "Testing",
-    lastname: "Location",
-    address1: "3121 W Government Way",
-    city: "Seattle",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
-    zipcode: "98199-1402",
-    phone: "(555) 5555-555")
+    Spree::Address.new(
+      firstname: "Testing",
+      lastname: "Location",
+      address1: "3121 W Government Way",
+      city: "Seattle",
+      country: Spree::Country.find_by(name: "United States of America"),
+      state: Spree::State.find_by(abbr: "WA"),
+      zipcode: "98199-1402",
+      phone: "(555) 5555-555"
+    )
   end
 
   def test_case_1a_address
@@ -317,38 +316,35 @@ describe 'Checkout', js: true do
     lastname: "Doe",
     address1: "1 3rd Street",
     city: "Seattle",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "WA"),
     zipcode: "98001",
     phone: "(555) 5555-555")
   end
 
   def test_case_1b_address
-    stock_location_address = Spree::Address.new(
-    firstname: "John",
-    lastname: "Doe",
-    address1: "354 Union Ave NE",
-    city: "Renton",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "WA").first,
-    zipcode: "98059",
-    phone: "(555) 5555-555")
+    Spree::Address.new(
+      firstname: "John",
+      lastname: "Doe",
+      address1: "354 Union Ave NE",
+      city: "Renton",
+      country: Spree::Country.find_by(name: "United States of America"),
+      state: Spree::State.find_by(abbr: "WA"),
+      zipcode: "98059",
+      phone: "(555) 5555-555"
+    )
   end
 
-  def test_case_2a_address
+  def test_case_2_address
     stock_location_address = Spree::Address.new(
     firstname: "John",
     lastname: "Doe",
     address1: "75 Rev Martin Luther King Jr Drive",
     city: "St. Paul",
-    country: Spree::Country.where(name: "United States of America").first,
-    state: Spree::State.where(abbr: "MN").first,
+    country: Spree::Country.find_by(name: "United States of America"),
+    state: Spree::State.find_by(abbr: "MN"),
     zipcode: "55155",
     phone: "(555) 5555-555")
-  end
-
-  def test_case_2b_address
-    return test_case_2a_address
   end
 
   def test_case_3_address
@@ -386,5 +382,4 @@ describe 'Checkout', js: true do
     zipcode: "36110",
     phone: "(555) 5555-555")
   end
-
 end

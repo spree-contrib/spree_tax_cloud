@@ -2,6 +2,9 @@
 en:
   spree:
     address_verification_failed: Address Verification Failed
+    cart_item_cannot_be_made: TaxCloud::CartItem cannot be made from this item.
+    ensure_one_valid_stock_location: Please ensure you have at least one Stock Location with a valid address for your tax origin.
+    standard_taxcloud_tic: should be in the standard TaxCloud TIC five-digit form
     tax_cloud_settings: TaxCloud Settings
     tax_cloud_taxability_codes: Taxability Codes
     tax_cloud_api_login_and_key: API Login and Key

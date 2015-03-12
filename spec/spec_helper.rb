@@ -1,5 +1,4 @@
-# Configure Rails Environment
-ENV['RAILS_ENV'] = 'test'
+ENV['RAILS_ENV'] ||= 'test'
 
 require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 
@@ -9,13 +8,10 @@ require 'factory_girl'
 FactoryGirl.find_definitions
 require 'ffaker'
 
-# Requires supporting ruby files with custom matchers and macros, etc,
-# in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
 require 'spree/testing_support/factories'
 require 'spree/testing_support/capybara_ext'
-require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/flash'
@@ -26,14 +22,9 @@ Capybara.javascript_driver = :poltergeist
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
-  config.include Spree::TestingSupport::ControllerRequests
   config.include Spree::TestingSupport::Preferences
   config.include Spree::TestingSupport::Flash
   config.include Spree::TestingSupport::UrlHelpers
-
-  # Capybara javascript drivers require transactional fixtures set to false, and we just use DatabaseCleaner to cleanup after each test instead.
-  # Without transactional fixtures set to false none of the records created to setup a test will be available to the browser, which runs under a seperate server instance.
-  config.use_transactional_fixtures = false
 
   # Official verification and test harness login credentials provided 7/8/14
   # by David Campbell of The Federal Tax Authority.
@@ -43,27 +34,23 @@ RSpec.configure do |config|
   # AL, AK, AZ, CA, CO, CT, DC, FL, HI, ID, IL, LA, ME, MD, MA, MS, MO, NM, NY, PA, SC, TX, and VA
   config.before :suite do
     Spree::Config[:taxcloud_api_login_id] = '2D7D820'
-    Spree::Config[:taxcloud_api_key]      = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
+    Spree::Config[:taxcloud_api_key] = '0946110C-2AA9-4387-AD5C-4E1C551B8D0C'
     Spree::Config[:taxcloud_usps_user_id] = '000FEDTA0000'
-    Spree::Config[:taxcloud_default_product_tic]  = '00000'
-    Spree::Config[:taxcloud_shipping_tic]         = '11010'
+    Spree::Config[:taxcloud_default_product_tic] = '00000'
+    Spree::Config[:taxcloud_shipping_tic] = '11010'
   end
 
   config.before :each do
-    # Before each spec check if it is a Javascript test and switch between using database transactions or not where necessary.
     DatabaseCleaner.strategy = RSpec.current_example.metadata[:js] ? :truncation : :transaction
     DatabaseCleaner.start
   end
 
-  # After each spec clean the database.
   config.after :each do
     DatabaseCleaner.clean
   end
 
   config.color = true
-  # If true, the base class of anonymous controllers will be inferred
-  # automatically. This will be the default behavior in future versions of
-  # rspec-rails.
+  config.use_transactional_fixtures = false
   config.infer_base_class_for_anonymous_controllers = false
   config.infer_spec_type_from_file_location!
 end
