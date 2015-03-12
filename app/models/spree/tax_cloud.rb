@@ -2,7 +2,7 @@ module Spree
   class TaxCloud
     def self.transaction_from_order(order)
       stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.valid.first
-      Spree.t(:ensure_one_valid_stock_location) unless stock_location
+      raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       transaction = ::TaxCloud::Transaction.new(
         customer_id: order.user_id || order.email,
