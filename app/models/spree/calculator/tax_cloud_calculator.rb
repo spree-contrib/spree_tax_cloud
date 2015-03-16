@@ -71,6 +71,13 @@ module Spree
       case item
       when Spree::LineItem
         key = "Spree::LineItem #{item.id}: #{item.quantity}x<#{item.variant.cache_key}>@#{item.price}#{item.currency}"
+        if item.order.ship_address
+          key << "shipped_to<#{item.order.ship_address.try(:cache_key)}>"
+        elsif item.order.billing_address
+          key << "billed_to<#{item.order.bill_address.try(:cache_key)}>"
+        end
+      when Spree::Shipment
+        "#{item.cache_key}--from:#{item.stock_location.cache_key}--to:#{item.order.shipping_address.cache_key}"
       end
     end
   end
