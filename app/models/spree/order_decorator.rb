@@ -23,7 +23,7 @@ Spree::Order.class_eval do
 
   def log_tax_cloud(response)
     # Implement into your own application.
-    # You could create your Log::TaxCloud model then use either HStore or
+    # You could create your own Log::TaxCloud model then use either HStore or
     # JSONB to store the response.
     # The response argument carries the response from an order transaction.
   end
