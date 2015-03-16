@@ -15,7 +15,11 @@ module SpreeTaxCloud
       Spree::PermittedAttributes.product_attributes << :tax_cloud_tic
     end
 
-    def self.activate
+    config.to_prepare do
+      Dir.glob(Rails.root + "app/*/spree/**/*_decorator*.rb").each do |c|
+        require_dependency(c)
+      end
+
       if SpreeTaxCloud::Engine.frontend_available?
         Rails.application.config.assets.precompile += [
           'lib/assets/javascripts/spree/frontend/spree_tax_cloud.js',
@@ -33,13 +37,6 @@ module SpreeTaxCloud
 
     if self.frontend_available?
       paths["app/controllers"] << "lib/controllers/frontend"
-    end
-
-    config.to_prepare &method(:activate).to_proc
-    config.after_initializer do
-      Dir.glob(File.join(File.dirname(__FILE__), '../../app/*/spree/**/*_decorator*.rb')) do |c|
-        Rails.configuration.cache_classes ? require(c) : load(c)
-      end
     end
   end
 end
