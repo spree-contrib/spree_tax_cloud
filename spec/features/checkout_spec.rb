@@ -139,6 +139,7 @@ describe 'Checkout', js: true do
     page.should have_content("Sales Tax $0.94")
   end
 
+  # TODO: This spec will fail until address verification is implemented in Spree::TaxCloud
   it 'TaxCloud Test Case 1b: Verify Address without error' do
     add_to_cart("RoR Mug")
     click_button "Checkout"
