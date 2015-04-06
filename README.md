@@ -19,15 +19,21 @@ Spree Configuration
 
 Add the extension to your Gemfile:
 
-    gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud', branch: 'master'
-    
+```ruby
+gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud', branch: 'master'
+```
+
 And add it to your bundle:
 
-    bundle install
+```
+bundle install
+```
 
 Run below to install migrations:
 
-    bundle exec rails g spree_tax_cloud:install
+```
+bundle exec rails g spree_tax_cloud:install
+```
 
 In the Admin section of Spree, go to Configuration, then select TaxCloud Settings.
 
