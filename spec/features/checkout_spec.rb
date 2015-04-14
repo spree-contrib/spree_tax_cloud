@@ -44,7 +44,7 @@ describe 'Checkout', js: true do
     page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
     fill_in_address(alabama_address)
-    fill_in "order_bill_address_attributes_zipcode", with: '35014'
+    fill_in "order_bill_address_attributes_zipcode", with: '12345'
 
     click_button "Save and Continue"
     click_button "Save and Continue"
