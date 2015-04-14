@@ -41,9 +41,8 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
+    page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
-
     fill_in_address(alabama_address)
     fill_in "order_bill_address_attributes_zipcode", with: '35014'
 
@@ -58,9 +57,8 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
+    page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
-
     fill_in_address(alabama_address)
     Spree::Product.where(name: "RoR Mug").first.update_attributes(sku: "")
 
@@ -72,10 +70,11 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
+    page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     fill_in_address(alabama_address)
     click_button "Save and Continue"
+
     click_button "Save and Continue"
 
     click_on "Save and Continue"
@@ -86,10 +85,11 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
+    page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     fill_in_address(alabama_address)
     click_button "Save and Continue"
+
     click_button "Save and Continue"
     page.should_not have_content(/Sales Tax/i)
     page.should have_content(/Order Total: \$20.00/i) # Alabama orders are configured under this API key to have no tax
@@ -103,11 +103,11 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
+    page.should have_content(/Item Total: \$10/i)
     fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     fill_in_address(uk_address)
-
     click_button "Save and Continue"
+
     # There should not be a check on the address because
     # the rate is not handled by TaxCloud.
     expect(page).not_to have_content(/Address Verification Failed/i)
@@ -123,9 +123,8 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
-    fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     page.should have_content(/Order Total: \$10/i)
+    fill_in "order_email", with: "test@example.com"
     fill_in_address(test_case_1a_address)
     click_button "Save and Continue"
     # From TaxCloud:
@@ -143,9 +142,8 @@ describe 'Checkout', js: true do
     add_to_cart("RoR Mug")
     click_button "Checkout"
 
-    fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     page.should have_content(/Item Total: \$10/i)
+    fill_in "order_email", with: "test@example.com"
     fill_in_address(test_case_1b_address)
     click_button "Save and Continue"
     # From TaxCloud:
@@ -158,9 +156,8 @@ describe 'Checkout', js: true do
     add_to_cart("Shirt")
     click_button "Checkout"
 
-    fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     page.should have_content(/Item Total: \$10/i)
+    fill_in "order_email", with: "test@example.com"
     fill_in_address(test_case_2a_address)
     click_button "Save and Continue"
 
@@ -182,9 +179,8 @@ describe 'Checkout', js: true do
     add_to_cart("Shirt")
     click_button "Checkout"
 
-    fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     page.should have_content(/Item Total: \$20/i)
+    fill_in "order_email", with: "test@example.com"
     fill_in_address(test_case_2b_address)
     click_button "Save and Continue"
 
@@ -212,9 +208,8 @@ describe 'Checkout', js: true do
     add_to_cart("Shirt")
     click_button "Checkout"
 
-    fill_in "order_email", with: "test@example.com"
-    click_button "Continue"
     page.should have_content(/Item Total: \$10/i)
+    fill_in "order_email", with: "test@example.com"
     fill_in_address(test_case_3_address)
     click_button "Save and Continue"
 
