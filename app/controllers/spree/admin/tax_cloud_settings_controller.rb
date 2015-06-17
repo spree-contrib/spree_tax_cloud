@@ -12,6 +12,9 @@ module Spree
           next unless Spree::Config.has_preference? name
           Spree::Config[name] = value
         end
+
+        Spree::TaxCloud.update_config
+
         flash[:success] = Spree.t(:successfully_updated, :resource => Spree.t(:tax_cloud_settings))
 
         redirect_to edit_admin_tax_cloud_settings_path
