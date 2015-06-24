@@ -1,5 +1,14 @@
 module Spree
   class TaxCloud
+
+    def self.update_config
+      ::TaxCloud.configure do |config|
+        config.api_login_id = Spree::Config.taxcloud_api_login_id
+        config.api_key = Spree::Config.taxcloud_api_key
+        config.usps_username = Spree::Config.taxcloud_usps_user_id
+      end
+    end
+
     def self.transaction_from_order(order)
       stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
       raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
