@@ -35,7 +35,7 @@ Run below to install migrations:
 bundle exec rails g spree_tax_cloud:install
 ```
 
-In the Admin section of Spree, go to Configuration, then select TaxCloud Settings.
+In the Admin section of Spree, go to Configurations, then select TaxCloud Settings.
 
 Enter your `api_login_id` and `api_key`, and optionally your USPS login.
 You can also configure the default Product TIC and Shipping TIC for TaxCloud to use, although it is recommended to leave the defaults as is: `00000` for product default and `11010` for shipping default.
