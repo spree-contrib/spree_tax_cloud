@@ -8,11 +8,12 @@ Based on the work of Chris Mar and Drew Tempelmeyer.
 TaxCloud Configuration
 -----
 
-Create an account with Tax Cloud...
+1. Create an account with Tax Cloud ([https://taxcloud.net](https://taxcloud.net))...
 
-[https://taxcloud.net](https://taxcloud.net)
+2. ...and get an `api_login_id` and `api_key`.
 
-...and get an `api_login_id` and `api_key`.
+3. Go to `Your Account` >> `Tax States`, and turn on sales tax collection for the relevant states in which you want/need to collect sales tax. (**NOTE:** Unless states are explicitly added, TaxCloud will return zero sales tax by default for orders shipping to those states.)
+
 
 Spree Configuration
 ------------------------
