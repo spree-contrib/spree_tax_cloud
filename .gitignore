@@ -22,3 +22,6 @@ tags
 *.orig
 .sass-cache
 .DS_Store
+.rvmrc
+.ruby-version
+.ruby-gemset
