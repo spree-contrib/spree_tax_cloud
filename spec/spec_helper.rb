@@ -38,6 +38,7 @@ RSpec.configure do |config|
     Spree::Config[:taxcloud_usps_user_id] = '000FEDTA0000'
     Spree::Config[:taxcloud_default_product_tic] = '00000'
     Spree::Config[:taxcloud_shipping_tic] = '11010'
+    Spree::TaxCloud.update_config
   end
 
   config.before :each do
