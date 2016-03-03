@@ -7,7 +7,7 @@ describe 'Checkout', js: true do
   let!(:minnesota) { create(:state, name: "Minnesota", abbr: "MN", country: usa) }
   let!(:oklahoma) { create(:state, name: "Oklahoma", abbr: "OK", country: usa) }
   let!(:washington) { create(:state, name: "Washington", abbr: "WA", country: usa) }
-
+  let!(:store) { create(:store) }
   let!(:zone) do
     zone = create(:zone, name: "US")
     zone.members.create(zoneable: usa)
