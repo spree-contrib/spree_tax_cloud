@@ -11,8 +11,16 @@ module SpreeTaxCloud
       generator.test_framework :rspec
     end
 
+    config.after_initialize do
+      Spree::TaxCloud.update_config
+    end
+
     initializer "spree_tax_cloud.permitted_attributes" do |_app|
       Spree::PermittedAttributes.product_attributes << :tax_cloud_tic
+    end
+
+    initializer 'spree_tax_cloud.calculators.tax_rates' do |app|
+      app.config.spree.calculators.tax_rates << Spree::Calculator::TaxCloudCalculator
     end
 
     def self.activate
