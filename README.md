@@ -1,4 +1,4 @@
-Spree::TaxCloud 
+Spree::TaxCloud
 =======================
 
 Spree::TaxCloud is a US sales tax extension for Spree using the Tax Cloud service.
@@ -21,6 +21,15 @@ Spree Configuration
 ## Installation
 
 1. Add this extension to your Gemfile with this line:
+
+  #### Spree >= 3.1
+
+  ```ruby
+  gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud'
+  ```
+
+  #### Spree 3.0 and Spree 2.x
+
   ```ruby
   gem 'spree_tax_cloud', github: 'spree-contrib/spree_tax_cloud', branch: 'X-X-stable'
   ```
@@ -92,4 +101,4 @@ Discussion and pull requests addressing this functionality are welcomed.
 COPYRIGHT
 ---------
 
-[Copyright]( http://jet.mit-license.org/ ) by Jerrold R Thompson 
+[Copyright]( http://jet.mit-license.org/ ) by Jerrold R Thompson
