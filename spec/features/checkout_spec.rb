@@ -244,19 +244,19 @@ describe 'Checkout', js: true do
     fill_in_address(test_case_6_address)
     click_button "Save and Continue"
 
-    expect(page).to have_content(/Sales Tax \$0.80/i)
-    expect(page).to have_content(/Order Total: \$20.80/i)
+    expect(page).to have_content(/Sales Tax \$0.85/i)
+    expect(page).to have_content(/Order Total: \$20.85/i)
     expect(page).not_to have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    expect(page).to have_content(/Sales Tax \$1.60/i)
-    expect(page).to have_content(/Order Total: \$21.60/i)
+    expect(page).to have_content(/Sales Tax \$1.70/i)
+    expect(page).to have_content(/Order Total: \$21.70/i)
 
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    expect(page).to have_content(/Sales Tax \$1.60/i)
-    expect(page).to have_content(/ORDER TOTAL: \$21.60/i)
+    expect(page).to have_content(/Sales Tax \$1.70/i)
+    expect(page).to have_content(/ORDER TOTAL: \$21.70/i)
   end
 
   # it 'TaxCloud Test Case 7: Handling errors' do
