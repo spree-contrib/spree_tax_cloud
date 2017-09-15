@@ -1,4 +1,4 @@
-class CreateSpreeTaxCloudTransactions < ActiveRecord::Migration
+class CreateSpreeTaxCloudTransactions < SpreeExtension::Migration[4.2]
   def change
     create_table :spree_tax_cloud_transactions do |t|
       t.references :order

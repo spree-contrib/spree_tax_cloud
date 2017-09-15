@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   spree_version = '>= 3.1.0', '< 4.0'
   s.add_dependency 'spree_backend', spree_version
   s.add_dependency 'spree_core', spree_version
+  s.add_dependency 'spree_extension'
 
   s.add_runtime_dependency 'savon', '~> 2.5.1'
   s.add_runtime_dependency 'tax_cloud', '~> 0.3.0'
