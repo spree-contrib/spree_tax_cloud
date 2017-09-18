@@ -134,7 +134,7 @@ describe 'Checkout', js: true do
     # can still be passed to Lookup. The only error that should prevent an order from processing
     # is when the USPSID used is not valid, or a customer provided zip code does not exist
     # within the customer provided state (discussed later in Test Case 7, Handling Errors).
-    expect(page).to have_content(/Sales Tax \$0.95/i)
+    expect(page).to have_content(/Sales Tax \$1.00/i)
   end
 
   # TODO: This spec will fail until address verification is implemented in Spree::TaxCloud
@@ -149,7 +149,7 @@ describe 'Checkout', js: true do
     # From TaxCloud:
     # The destination address used as-is will not give the most accurate
     # rate. The verified address will give the correct result.
-    expect(page).to have_content(/Sales Tax \$0.95/i)
+    expect(page).to have_content(/Sales Tax \$1.00/i)
   end
 
   it 'TaxCloud Test Case 2a: If all items in cart are tax ecempt, shipping is not taxed (in some states)' do
@@ -244,19 +244,19 @@ describe 'Checkout', js: true do
     fill_in_address(test_case_6_address)
     click_button "Save and Continue"
 
-    expect(page).to have_content(/Sales Tax \$0.80/i)
-    expect(page).to have_content(/Order Total: \$20.80/i)
+    expect(page).to have_content(/Sales Tax \$0.89/i)
+    expect(page).to have_content(/Order Total: \$20.89/i)
     expect(page).not_to have_content(/Address Verification Failed/i)
     click_button "Save and Continue"
 
-    expect(page).to have_content(/Sales Tax \$1.60/i)
-    expect(page).to have_content(/Order Total: \$21.60/i)
+    expect(page).to have_content(/Sales Tax \$1.78/i)
+    expect(page).to have_content(/Order Total: \$21.78/i)
 
     click_on "Save and Continue"
 
     expect(current_path).to match(spree.order_path(Spree::Order.last))
-    expect(page).to have_content(/Sales Tax \$1.60/i)
-    expect(page).to have_content(/ORDER TOTAL: \$21.60/i)
+    expect(page).to have_content(/Sales Tax \$1.78/i)
+    expect(page).to have_content(/ORDER TOTAL: \$21.78/i)
   end
 
   # it 'TaxCloud Test Case 7: Handling errors' do

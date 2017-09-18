@@ -29,10 +29,6 @@ module SpreeTaxCloud
       end
 
       if SpreeTaxCloud::Engine.frontend_available?
-        Rails.application.config.assets.precompile += [
-          'lib/assets/javascripts/spree/frontend/spree_tax_cloud.js',
-          'lib/assets/stylesheets/spree/frontend/spree_tax_cloud.css'
-        ]
         Dir.glob(File.join(File.dirname(__FILE__), "../controllers/frontend/*/*_decorator*.rb")) do |c|
           Rails.configuration.cache_classes ? require(c) : load(c)
         end
